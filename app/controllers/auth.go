@@ -23,15 +23,17 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	passwordHash, err := queries.UserLogin(r.Context(), username)
-	if err := auth.CompareHashAndPassword(passwordHash, password); err != nil {
+	account, err := queries.UserLogin(r.Context(), username)
+	if err := auth.CompareHashAndPassword(account.PasswordHash, password); err != nil {
 		writeError(w, http.StatusUnauthorized, "Unknown username or password")
 	}
 
-	token, expiry, err := auth.CreateUserToken(username, 1 * time.Hour)
+	token, expiry, err := auth.CreateUserToken(username, account.Id, 1 * time.Hour)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "Failed to issue token")
 	}
+
+	// TODO: spawn goroutine to update last login timestamp here
 
 	json.NewEncoder(w).Encode(&LoginResponse{Token: token, ValidUntil: expiry})
 }

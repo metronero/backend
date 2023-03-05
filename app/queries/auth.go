@@ -6,23 +6,24 @@ import (
 
 	"github.com/google/uuid"
 
+	"gitlab.com/moneropay/metronero/metronero-backend/app/models"
 	db "gitlab.com/moneropay/metronero/metronero-backend/platform/database"
 )
 
 // Given an username, returns password hash
-func UserLogin(ctx context.Context, username string) (string, error) {
-	var passwordHash string
+func UserLogin(ctx context.Context, username string) (models.Account, error) {
+	var loginData models.Account
 
-	row, err := db.QueryRow(ctx, "SELECT password_hash FROM accounts WHERE username=$1", username)
+	row, err := db.QueryRow(ctx, "SELECT id, password_hash FROM accounts WHERE username=$1", username)
 	if err != nil {
-		return "", err
+		return loginData, err
 	}
 
-	if err := row.Scan(&passwordHash); err != nil {
-		return "", err
+	if err := row.Scan(&loginData.Id, &loginData.PasswordHash); err != nil {
+		return loginData, err
 	}
 
-	return passwordHash, nil
+	return loginData, nil
 }
 
 func UserRegister(ctx context.Context, username, passwordHash string) error {

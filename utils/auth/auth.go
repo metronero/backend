@@ -9,8 +9,8 @@ import (
 	"gitlab.com/moneropay/metronero/metronero-backend/utils/config"
 )
 
-func CreateUserToken(username string, lifetime time.Duration) (string, string, error) {
-	claims := map[string]interface{}{"username": username}
+func CreateUserToken(username, id string, lifetime time.Duration) (string, string, error) {
+	claims := map[string]interface{}{"username": username, "id": id}
 	expiryDate := time.Unix(jwtauth.ExpireIn(lifetime), 0)
 	jwtauth.SetExpiry(claims, expiryDate)
 	_, token, err := config.JwtSecret.Encode(claims)
