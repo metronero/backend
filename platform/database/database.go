@@ -1,44 +1,46 @@
-package daemon
+package database
 
 import (
 	"context"
 	"time"
+	"log"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/rs/zerolog/log"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+
+	"gitlab.com/moneropay/metronero/metronero-backend/utils/config"
 )
 
-var pdb *pgxpool.Pool
+var db *pgxpool.Pool
 
-func pdbConnect() {
+func Init() {
 	var err error
-	if pdb, err = pgxpool.Connect(context.Background(), Config.postgresCS); err != nil {
-		log.Fatal().Err(err).Msg("Startup failure")
+	if db, err = pgxpool.Connect(context.Background(), config.PostgresUri); err != nil {
+		log.Fatal("Failed to connect to database: ", err)
 	}
 }
 
-func pdbMigrate() {
-	m, err := migrate.New("file://db", Config.postgresCS)
+func Migrate() {
+	m, err := migrate.New("file://platform/migrations", config.PostgresUri)
 	if err != nil {
-		log.Fatal().Err(err).Msg("Startup failure")
+		log.Fatal("Failed to begin migration: ", err)
 	}
 	if err := m.Up(); err != nil {
 		if err == migrate.ErrNoChange {
 			return
 		}
-		log.Fatal().Err(err).Msg("Startup failure")
+		log.Fatal("Failed to migrate: ", err)
 	}
 }
 
-func pdbQueryRow(ctx context.Context, query string, args ...interface{}) (pgx.Row, error) {
+func QueryRow(ctx context.Context, query string, args ...interface{}) (pgx.Row, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Minute)
 	defer cancel()
 	c := make(chan pgx.Row, 1)
-	go func() { c <- pdb.QueryRow(ctx, query, args...) }()
+	go func() { c <- db.QueryRow(ctx, query, args...) }()
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
@@ -47,13 +49,13 @@ func pdbQueryRow(ctx context.Context, query string, args ...interface{}) (pgx.Ro
 	}
 }
 
-func pdbQuery(ctx context.Context, query string, args ...interface{}) (pgx.Rows, error) {
+func Query(ctx context.Context, query string, args ...interface{}) (pgx.Rows, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Minute)
 	defer cancel()
 	type queryRet struct { rows pgx.Rows; err error }
 	c := make(chan queryRet, 1)
 	go func() {
-		rows, err := pdb.Query(ctx, query, args...)
+		rows, err := db.Query(ctx, query, args...)
 		c <- queryRet{rows, err}
 	}()
 	select {
@@ -64,12 +66,12 @@ func pdbQuery(ctx context.Context, query string, args ...interface{}) (pgx.Rows,
 	}
 }
 
-func pdbExec(ctx context.Context, query string, args ...interface{}) error {
+func Exec(ctx context.Context, query string, args ...interface{}) error {
 	ctx, cancel := context.WithTimeout(ctx, time.Minute)
 	defer cancel()
 	c := make(chan error, 1)
 	go func() {
-		_, err := pdb.Exec(ctx, query, args...)
+		_, err := db.Exec(ctx, query, args...)
 		c <- err
 	}()
 	select {

@@ -1,3 +1,5 @@
+package server
+
 import (
         "context"
         "log"
@@ -7,9 +9,10 @@ import (
         "syscall"
         "time"
 
-        "github.com/go-chi/chi/v5"
         "golang.org/x/net/http2"
         "golang.org/x/net/http2/h2c"
+
+	"gitlab.com/moneropay/metronero/metronero-backend/utils/config"
 )
 
 func StartWithGracefulShutdown() {

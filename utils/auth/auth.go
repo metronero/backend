@@ -1,35 +1,29 @@
-package daemon
+package auth
 
 import (
-	"context"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
+	"github.com/go-chi/jwtauth/v5"
+
+	"gitlab.com/moneropay/metronero/metronero-backend/utils/config"
 )
 
-func CreateSecret(username string) (secret string, err error) {
-	_, secret, err = Config.JwtSecret.Encode(map[string]interface{}{"username": username})
-	return
+func CreateUserToken(username string, lifetime time.Duration) (string, string, error) {
+	claims := map[string]interface{}{"username": username}
+	expiryDate := time.Unix(jwtauth.ExpireIn(lifetime), 0)
+	jwtauth.SetExpiry(claims, expiryDate)
+	_, token, err := config.JwtSecret.Encode(claims)
+	if err != nil {
+		return "", "", err
+	}
+	return token, expiryDate.Format(time.RFC3339), nil
 }
 
-func UserRegister(ctx context.Context, username, password, walletAddress string) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
-	}
-	return pdbExec(ctx,
-	    "INSERT INTO accounts(username,password,wallet_address,commission,template)"+
-	    "VALUES($1,$2,$3,(SELECT standard_commission FROM settings),$4)",
-	    username, hash, walletAddress, defaultTemplate)
-}
-
-func UserLogin(ctx context.Context, username, password string) error {
-	var hash string
-	row, err := pdbQueryRow(ctx, "SELECT password FROM accounts WHERE username=$1", username)
-	if err != nil {
-		return err
-	}
-	if err := row.Scan(&hash); err != nil {
-		return err
-	}
+func CompareHashAndPassword(hash, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+}
+
+func HashPassword(password string) ([]byte, error) {
+	return bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 }
