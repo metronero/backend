@@ -14,11 +14,11 @@ import (
 	"gitlab.com/moneropay/metronero/metronero-backend/utils/config"
 )
 
-var db *pgxpool.Pool
+var Db *pgxpool.Pool
 
 func Init() {
 	var err error
-	if db, err = pgxpool.Connect(context.Background(), config.PostgresUri); err != nil {
+	if Db, err = pgxpool.Connect(context.Background(), config.PostgresUri); err != nil {
 		log.Fatal("Failed to connect to database: ", err)
 	}
 }
@@ -40,7 +40,7 @@ func QueryRow(ctx context.Context, query string, args ...interface{}) (pgx.Row, 
 	ctx, cancel := context.WithTimeout(ctx, time.Minute)
 	defer cancel()
 	c := make(chan pgx.Row, 1)
-	go func() { c <- db.QueryRow(ctx, query, args...) }()
+	go func() { c <- Db.QueryRow(ctx, query, args...) }()
 	select {
 	case <-ctx.Done():
 		return nil, ctx.Err()
@@ -55,7 +55,7 @@ func Query(ctx context.Context, query string, args ...interface{}) (pgx.Rows, er
 	type queryRet struct { rows pgx.Rows; err error }
 	c := make(chan queryRet, 1)
 	go func() {
-		rows, err := db.Query(ctx, query, args...)
+		rows, err := Db.Query(ctx, query, args...)
 		c <- queryRet{rows, err}
 	}()
 	select {
@@ -71,7 +71,7 @@ func Exec(ctx context.Context, query string, args ...interface{}) error {
 	defer cancel()
 	c := make(chan error, 1)
 	go func() {
-		_, err := db.Exec(ctx, query, args...)
+		_, err := Db.Exec(ctx, query, args...)
 		c <- err
 	}()
 	select {

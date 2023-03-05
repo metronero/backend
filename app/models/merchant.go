@@ -1,20 +1,17 @@
 package models
 
 type Merchant struct {
-	Id string
-	Username string
-	PasswordHash string
+	AccountId string
 	CommissionRate uint64
 	WalletAddress string
 	TemplateId string
-	WithdrawalId uint64
 	APIKeyId string
 }
 
 type MerchantStats struct {
 	MerchantId string
+	Balance int64
 	LastLogin int64
-	AccountCreation uint64
 	TotalCommissionPaid uint64
 	TotalSales uint64
 }

@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type Payment struct {
 	Id string
         Amount uint64
@@ -18,4 +20,5 @@ type Payment struct {
 
 	// Possible statuses: pending, confirming, finished, cancelled, withdrawn.
 	Status string
+	LastUpdate time.Time
 }

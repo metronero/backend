@@ -15,8 +15,8 @@ var (
 )
 
 func Load() {
-	flag.StringVar(&BindAddr, "bind", "localhost:8080", "Bind address:port")
-	flag.StringVar(&PostgresUri, "postgres", "postgresql://metronero:m3tr0n3r0@localhost:5432/metronero", "PostgreSQL connection string")
+	flag.StringVar(&BindAddr, "bind", "localhost:5001", "Bind address:port")
+	flag.StringVar(&PostgresUri, "postgres", "postgresql://metronero:m3tr0n3r0@localhost:5432/metronero?sslmode=disable", "PostgreSQL connection string")
 	var jwtSecretStr string
 	flag.StringVar(&jwtSecretStr, "jwt-secret", "aabbccddeeffgg", "JWT secret")
 	flag.StringVar(&CommissionAddress, "commission-address", "46VGoe3bKWTNuJdwNjjr6oGHLVtV1c9QpXFP9M2P22bbZNU7aGmtuLe6PEDRAeoc3L7pSjfRHMmqpSF5M59eWemEQ2kwYuw", "Monero address for commissions")

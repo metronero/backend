@@ -45,10 +45,13 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/*
-	if err := queries.UserRegister(username, password); err != nil {
-		writeError(w, http.StatusInternalServerError, "Failed to register user " + err.Error())
+	passwordHashBytes, err := auth.HashPassword(password)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "Failed to hash password: " + err.Error())
+	}
+
+	if err := queries.UserRegister(r.Context(), username, string(passwordHashBytes)); err != nil {
+		writeError(w, http.StatusInternalServerError, "Failed to register user: " + err.Error())
 		return
 	}
-	*/
 }
