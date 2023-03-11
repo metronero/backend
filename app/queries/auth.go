@@ -19,7 +19,7 @@ func UserLogin(ctx context.Context, username string) (models.Account, error) {
 		return loginData, err
 	}
 
-	if err := row.Scan(&loginData.Id, &loginData.PasswordHash); err != nil {
+	if err := row.Scan(&loginData.AccountId, &loginData.PasswordHash); err != nil {
 		return loginData, err
 	}
 

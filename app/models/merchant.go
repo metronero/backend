@@ -1,23 +1,30 @@
 package models
 
+import "time"
+
 type Merchant struct {
-	AccountId string
-	CommissionRate uint64
-	WalletAddress string
-	TemplateId string
-	APIKeyId string
+	AccountId string `json:"id"`
+	Name string `json:"name"`
+	CommissionRate uint64 `json:"commission_rate"`
+	WalletAddress string `json:"wallet_address"`
+	TemplateId string `json:"template_id"`
 }
 
 type MerchantStats struct {
-	MerchantId string
-	Balance int64
-	LastLogin int64
-	TotalCommissionPaid uint64
-	TotalSales uint64
+	AccountId string `json:"merchant_id"`
+	Balance uint64 `json:"balance"`
+	TotalSales uint64 `json:"total_sales"`
+	LastLogin time.Time `json:"last_login"`
 }
 
 type MerchantAPIKeys struct {
-	Id string
-	Key string
-	ValidUntil int64
+	AccountId string `json:"merchant_id"`
+	KeyId string `json:"key_id"`
+	Secret string `json:"secret"`
+	ValidUntil time.Time `json:"valid_until"`
+}
+
+type MerchantDashboardInfo struct {
+	Stats MerchantStats `json:"merchant_stats"`
+	Recent []Payment `json:"recent_payments"`
 }

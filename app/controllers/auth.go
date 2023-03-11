@@ -7,12 +7,8 @@ import (
 
 	"gitlab.com/moneropay/metronero/metronero-backend/utils/auth"
 	"gitlab.com/moneropay/metronero/metronero-backend/app/queries"
+	"gitlab.com/moneropay/metronero/metronero-backend/app/models"
 )
-
-type LoginResponse struct {
-	Token string `json:"token"`
-	ValidUntil string `json:"valid_until"`
-}
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
@@ -28,14 +24,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusUnauthorized, "Unknown username or password")
 	}
 
-	token, expiry, err := auth.CreateUserToken(username, account.Id, 1 * time.Hour)
+	token, expiry, err := auth.CreateUserToken(username, account.AccountId, 1 * time.Hour)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "Failed to issue token")
 	}
 
 	// TODO: spawn goroutine to update last login timestamp here
 
-	json.NewEncoder(w).Encode(&LoginResponse{Token: token, ValidUntil: expiry})
+	json.NewEncoder(w).Encode(&models.TokenInfo{Token: token, ValidUntil: expiry})
 }
 
 func Register(w http.ResponseWriter, r *http.Request) {
