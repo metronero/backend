@@ -14,7 +14,6 @@ type MerchantStats struct {
 	AccountId string `json:"merchant_id"`
 	Balance uint64 `json:"balance"`
 	TotalSales uint64 `json:"total_sales"`
-	LastLogin time.Time `json:"last_login"`
 }
 
 type MerchantAPIKeys struct {

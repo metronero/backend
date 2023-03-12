@@ -6,7 +6,11 @@ type Account struct {
 	AccountId string
 	Username string
 	PasswordHash string
+}
+
+type AccountStats struct {
 	CreationDate time.Time
+	LastLogin time.Time
 }
 
 type AccountChange struct {
