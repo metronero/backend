@@ -31,22 +31,27 @@ CREATE TABLE IF NOT EXISTS account_stats (
 );
 
 CREATE TABLE IF NOT EXISTS merchants (
-	account_id UUID REFERENCES accounts ON DELETE CASCADE,
+	account_id UUID PRIMARY KEY REFERENCES accounts ON DELETE CASCADE,
 	commission bigint,
 	wallet_address text,
 	active_template_id int DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS merchant_stats (
-	account_id UUID REFERENCES accounts ON DELETE CASCADE,
+	account_id UUID PRIMARY KEY REFERENCES accounts ON DELETE CASCADE,
 	balance bigint NOT NULL DEFAULT 0,
 	total_sales bigint NOT NULL DEFAULT 0
 );
 
-CREATE TABLE IF NOT EXISTS merchant_api_keys (
-	key_id UUID PRIMARY KEY NOT NULL,
-	account_id UUID REFERENCES accounts ON DELETE CASCADE,
-	secret text NOT NULL,
+CREATE TABLE IF NOT EXISTS api_tokens (
+	account_id UUID PRIMARY KEY REFERENCES accounts ON DELETE CASCADE,
+	token text NOT NULL,
+	valid_until timestamp NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS callback_secrets (
+	account_id UUID PRIMARY KEY REFERENCES accounts ON DELETE CASCADE,
+	secret_key text NOT NULL,
 	valid_until timestamp NOT NULL
 );
 
@@ -66,6 +71,5 @@ CREATE TABLE IF NOT EXISTS payments (
 	callback_data text NOT NULL DEFAULT ' ',
 	status text NOT NULL DEFAULT 'pending'
 );
-
 
 COMMIT;

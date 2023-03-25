@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"time"
 	"encoding/json"
 	"net/http"
+	"time"
 
-	"gitlab.com/moneropay/metronero/metronero-backend/utils/auth"
-	"gitlab.com/moneropay/metronero/metronero-backend/app/queries"
 	"gitlab.com/moneropay/metronero/metronero-backend/app/models"
+	"gitlab.com/moneropay/metronero/metronero-backend/app/queries"
+	"gitlab.com/moneropay/metronero/metronero-backend/utils/auth"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -24,14 +24,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusUnauthorized, "Unknown username or password")
 	}
 
-	token, expiry, err := auth.CreateUserToken(username, account.AccountId, 1 * time.Hour)
+	token, expiry, err := auth.CreateUserToken(username, account.AccountId, 1*time.Hour)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "Failed to issue token")
 	}
 
 	// TODO: spawn goroutine to update last login timestamp here
 
-	json.NewEncoder(w).Encode(&models.TokenInfo{Token: token, ValidUntil: expiry})
+	json.NewEncoder(w).Encode(&models.ApiTokenInfo{Token: token, ValidUntil: expiry})
 }
 
 func Register(w http.ResponseWriter, r *http.Request) {
@@ -45,11 +45,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	passwordHashBytes, err := auth.HashPassword(password)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Failed to hash password: " + err.Error())
+		writeError(w, http.StatusInternalServerError, "Failed to hash password: "+err.Error())
 	}
 
 	if err := queries.UserRegister(r.Context(), username, string(passwordHashBytes)); err != nil {
-		writeError(w, http.StatusInternalServerError, "Failed to register user: " + err.Error())
+		writeError(w, http.StatusInternalServerError, "Failed to register user: "+err.Error())
 		return
 	}
 }

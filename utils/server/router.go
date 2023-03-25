@@ -44,8 +44,8 @@ func registerRoutes() *chi.Mux {
 	})
 
 	/*
-	r.Get("/p/{uuid}", controllers.Payment)
-	r.Post("/callback/{uuid}", controllers.Callback)
+		r.Get("/p/{uuid}", controllers.Payment)
+		r.Post("/callback/{uuid}", controllers.Callback)
 	*/
 
 	return r

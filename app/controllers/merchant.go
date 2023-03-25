@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 
 	"github.com/go-chi/jwtauth/v5"
 

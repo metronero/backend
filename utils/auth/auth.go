@@ -3,21 +3,21 @@ package auth
 import (
 	"time"
 
-	"golang.org/x/crypto/bcrypt"
 	"github.com/go-chi/jwtauth/v5"
+	"golang.org/x/crypto/bcrypt"
 
 	"gitlab.com/moneropay/metronero/metronero-backend/utils/config"
 )
 
-func CreateUserToken(username, id string, lifetime time.Duration) (string, string, error) {
+func CreateUserToken(username, id string, lifetime time.Duration) (string, time.Time, error) {
 	claims := map[string]interface{}{"username": username, "id": id}
 	expiryDate := time.Unix(jwtauth.ExpireIn(lifetime), 0)
 	jwtauth.SetExpiry(claims, expiryDate)
 	_, token, err := config.JwtSecret.Encode(claims)
 	if err != nil {
-		return "", "", err
+		return "", expiryDate, err
 	}
-	return token, expiryDate.Format(time.RFC3339), nil
+	return token, expiryDate, nil
 }
 
 func CompareHashAndPassword(hash, password string) error {

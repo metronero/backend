@@ -16,31 +16,31 @@ func GetMerchantInfo(id string) (models.MerchantDashboardInfo, error) {
 
 	return models.MerchantDashboardInfo{
 		Stats: models.MerchantStats{
-			AccountId: "dummy",
-			Balance: 13123862123,
+			AccountId:  "dummy",
+			Balance:    13123862123,
 			TotalSales: 9387397238432,
 		},
 		Recent: []models.Payment{
 			models.Payment{
 				MerchantName: "Siren",
-        			Amount: 12834232321,
-				Fee: 2728323,
-        			LastUpdate: t1,
-				Status: "Finished",
+				Amount:       12834232321,
+				Fee:          2728323,
+				LastUpdate:   t1,
+				Status:       "Finished",
 			},
 			models.Payment{
 				MerchantName: "Siren",
-        			Amount: 8263721312312,
-				Fee: 3432642,
-        			LastUpdate: t2,
-				Status: "Finished",
+				Amount:       8263721312312,
+				Fee:          3432642,
+				LastUpdate:   t2,
+				Status:       "Finished",
 			},
 			models.Payment{
 				MerchantName: "Siren",
-        			Amount: 38894233298788,
-				Fee: 2337432423,
-        			LastUpdate: t3,
-				Status: "Finished",
+				Amount:       38894233298788,
+				Fee:          2337432423,
+				LastUpdate:   t3,
+				Status:       "Finished",
 			},
 		},
 	}, nil

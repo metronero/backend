@@ -1,7 +1,7 @@
 package models
 
 type Instance struct {
-	Version string `json:"version"`
+	Version           string `json:"version"`
 	DefaultCommission uint64 `json:"default_commission"`
 
 	// Allow multiple merchants to use this instance and store their funds
@@ -24,7 +24,7 @@ type InstanceBootstrap struct {
 
 type InstanceStats struct {
 	// Total fees paid by merchants
-	WalletBalance uint64 `json:"wallet_balance"`
-	TotalProfits uint64 `json:"total_profits"`
+	WalletBalance  uint64 `json:"wallet_balance"`
+	TotalProfits   uint64 `json:"total_profits"`
 	TotalMerchants uint64 `json:"total_merchants"`
 }

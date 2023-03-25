@@ -6,12 +6,12 @@ import (
 )
 
 var (
-	BindAddr string
-	PostgresUri string
-	JwtSecret *jwtauth.JWTAuth
+	BindAddr          string
+	PostgresUri       string
+	JwtSecret         *jwtauth.JWTAuth
 	CommissionAddress string
-	CallbackUrl string
-	MoneroPay string
+	CallbackUrl       string
+	MoneroPay         string
 )
 
 func Load() {

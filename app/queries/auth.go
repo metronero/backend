@@ -15,7 +15,7 @@ func UserLogin(ctx context.Context, username string) (models.Account, error) {
 	var loginData models.Account
 
 	row, err := db.QueryRow(ctx, "SELECT account_id, password_hash FROM accounts WHERE username=$1",
-	    username)
+		username)
 	if err != nil {
 		return loginData, err
 	}
@@ -36,17 +36,17 @@ func UserRegister(ctx context.Context, username, passwordHash string) error {
 	}
 	defer tx.Rollback(ctx)
 
-	if _, err := tx.Exec(ctx, "INSERT INTO accounts (account_id, username, password_hash)" +
-	    "VALUES ($1, $2, $3)", id, username, passwordHash); err != nil {
+	if _, err := tx.Exec(ctx, "INSERT INTO accounts (account_id, username, password_hash)"+
+		"VALUES ($1, $2, $3)", id, username, passwordHash); err != nil {
 		return err
 	}
 
-	if _, err := tx.Exec(ctx, "INSERT INTO account_stats (account_id, creation_date)" +
-	    "VALUES ($1, $2)", id, time.Now()); err != nil {
+	if _, err := tx.Exec(ctx, "INSERT INTO account_stats (account_id, creation_date)"+
+		"VALUES ($1, $2)", id, time.Now()); err != nil {
 		return err
 	}
 	if username != "admin" {
-		if _,  err := tx.Exec(ctx, "INSERT INTO merchants (account_id) VALUES ($1)", id); err != nil {
+		if _, err := tx.Exec(ctx, "INSERT INTO merchants (account_id) VALUES ($1)", id); err != nil {
 			return err
 		}
 		if _, err := tx.Exec(ctx, "INSERT INTO merchant_stats (account_id) VALUES ($1)", id); err != nil {
