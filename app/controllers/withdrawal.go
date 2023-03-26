@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 
 	"gitlab.com/moneropay/metronero/metronero-backend/app/queries"
@@ -18,7 +19,9 @@ func AdminGetWithdrawals(w http.ResponseWriter, r *http.Request) {
         json.NewEncoder(w).Encode(p)
 }
 
-func MerchantWithdrawFunds(w http.ResponseWriter, r *http.Request) {}
+func MerchantWithdrawFunds(w http.ResponseWriter, r *http.Request) {
+	// TODO: Initiate transfer with MoneroPay here
+}
 
 func MerchantGetWithdrawals(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
@@ -35,4 +38,12 @@ func MerchantGetWithdrawals(w http.ResponseWriter, r *http.Request) {
         json.NewEncoder(w).Encode(p)
 }
 
-func GetWithdrawalsByMerchant(w http.ResponseWriter, r *http.Request) {}
+func GetWithdrawalsByMerchant(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "merchant_id")
+        p, err := queries.GetWithdrawalsByAccount(r.Context(), id)
+        if err != nil {
+                writeError(w, ErrDatabase, err)
+		return
+        }
+        json.NewEncoder(w).Encode(p)
+}

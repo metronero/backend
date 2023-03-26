@@ -21,6 +21,7 @@ var (
 	ErrTokenIssue = &ApiError{Code: 5, Msg: "Failed to issue token.", status: 500}
 	ErrUserExists = &ApiError{Code: 6, Msg: "User already exists.", status: 400}
 	ErrNoId = &ApiError{Code: 7, Msg: "Unknown resource ID.", status: 400}
+	ErrBadRequest = &ApiError{Code: 8, Msg: "Invalid request body.", status: 400}
 	ErrDatabase = &ApiError{Code: 10, Msg: "Database error.", status: 500}
 )
 

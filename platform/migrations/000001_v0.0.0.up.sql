@@ -34,7 +34,8 @@ CREATE TABLE IF NOT EXISTS merchants (
 	account_id UUID PRIMARY KEY REFERENCES accounts ON DELETE CASCADE,
 	commission bigint,
 	wallet_address text,
-	active_template_id int DEFAULT 0
+	active_template_id int DEFAULT 0,
+	disabled bool DEFAULT false NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS merchant_stats (

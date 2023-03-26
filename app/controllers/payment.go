@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 
 	"gitlab.com/moneropay/metronero/metronero-backend/app/queries"
@@ -19,7 +20,6 @@ func AdminGetPayments(w http.ResponseWriter, r *http.Request) {
 }
 
 func MerchantCreatePaymentReq(w http.ResponseWriter, r *http.Request) {
-
 }
 
 func MerchantGetPayments(w http.ResponseWriter, r *http.Request) {
@@ -37,4 +37,12 @@ func MerchantGetPayments(w http.ResponseWriter, r *http.Request) {
         json.NewEncoder(w).Encode(p)
 }
 
-func GetPaymentsByMerchant(w http.ResponseWriter, r *http.Request) {}
+func GetPaymentsByMerchant(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "merchant_id")
+        p, err := queries.GetPaymentsByAccount(r.Context(), id)
+        if err != nil {
+                writeError(w, ErrDatabase, err)
+		return
+        }
+        json.NewEncoder(w).Encode(p)
+}

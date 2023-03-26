@@ -8,10 +8,11 @@ type Merchant struct {
 	CommissionRate uint64 `json:"commission_rate"`
 	WalletAddress  string `json:"wallet_address"`
 	TemplateId     string `json:"template_id"`
+	Disabled       bool   `json:"disabled"`
 }
 
 type MerchantStats struct {
-	AccountId  string `json:"merchant_id"`
+	AccountId  string `json:"merchant_id,omitempty"`
 	Balance    uint64 `json:"balance"`
 	TotalSales uint64 `json:"total_sales"`
 }
@@ -23,7 +24,12 @@ type MerchantAPIKeys struct {
 	ValidUntil time.Time `json:"valid_until"`
 }
 
+type MerchantSettings struct {
+	CommissionRate uint64 `json:"commission_rate,omitempty"`
+	Disabled       bool   `json:"disabled,omitempty"`
+}
+
 type MerchantDashboardInfo struct {
-	Stats  MerchantStats `json:"merchant_stats"`
-	Recent []Payment     `json:"recent_payments"`
+	Stats          MerchantStats `json:"merchant_stats"`
+	RecentPayments []Payment     `json:"recent_payments"`
 }
