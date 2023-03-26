@@ -29,12 +29,12 @@ func MerchantInfo(w http.ResponseWriter, r *http.Request) {
 
 func MerchantUpdate(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "merchant_id")
-	var settings *models.MerchantSettings
-	if err := json.NewDecoder(r.Body).Decode(settings); err != nil {
+	var settings models.MerchantSettings
+	if err := json.NewDecoder(r.Body).Decode(&settings); err != nil {
 		writeError(w, ErrBadRequest, nil)
 		return
 	}
-	if err := queries.ConfigureMerchant(r.Context(), id, settings); err != nil {
+	if err := queries.ConfigureMerchant(r.Context(), id, &settings); err != nil {
 		writeError(w, ErrDatabase, nil)
 	}
 }
