@@ -1,7 +1,19 @@
 package controllers
 
-import "net/http"
+import (
+	"encoding/json"
+	"net/http"
 
-func GetInstance(w http.ResponseWriter, r *http.Request) {}
+	"gitlab.com/moneropay/metronero/metronero-backend/app/queries"
+)
+
+func GetInstance(w http.ResponseWriter, r *http.Request) {
+	instance, err := queries.InstanceInfo(r.Context())
+	if err != nil {
+		writeError(w, ErrDatabase, nil)
+		return
+	}
+        json.NewEncoder(w).Encode(instance)
+}
 
 func EditInstance(w http.ResponseWriter, r *http.Request) {}

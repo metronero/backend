@@ -28,3 +28,8 @@ type InstanceStats struct {
 	TotalProfits   uint64 `json:"total_profits"`
 	TotalMerchants uint64 `json:"total_merchants"`
 }
+
+type InstanceInfo struct {
+	Details Instance     `json:"details"`
+	Stats   InstanceStats `json:"stats"`
+}
