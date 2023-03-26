@@ -56,20 +56,32 @@ CREATE TABLE IF NOT EXISTS callback_secrets (
 );
 
 CREATE TABLE IF NOT EXISTS templates (
-	id SERIAL PRIMARY KEY,
+	template_id SERIAL PRIMARY KEY,
 	account_id UUID REFERENCES accounts ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS payments (
-	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	payment_id UUID PRIMARY KEY,
 	amount bigint NOT NULL,
+	fee bigint NOT NULL,
+	order_id text,
 	accept_url text NOT NULL,
 	cancel_url text NOT NULL,
 	callback_url text NOT NULL DEFAULT ' ',
-	account_id UUID REFERENCES accounts ON DELETE CASCADE,
 	address text NOT NULL,
 	callback_data text NOT NULL DEFAULT ' ',
-	status text NOT NULL DEFAULT 'pending'
+	status text NOT NULL DEFAULT 'pending',
+	last_update timestamp NOT NULL,
+	account_id UUID REFERENCES accounts ON DELETE CASCADE,
+	merchant_name text
+);
+
+CREATE TABLE IF NOT EXISTS withdrawals (
+	withdrawal_id UUID PRIMARY KEY,
+	amount bigint NOT NULL,
+	withdraw_date timestamp NOT NULL,
+	account_id UUID REFERENCES accounts ON DELETE CASCADE,
+	merchant_name text
 );
 
 COMMIT;

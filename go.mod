@@ -9,6 +9,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/namsral/flag v1.7.4-pre
+	github.com/rs/zerolog v1.15.0
 	golang.org/x/crypto v0.7.0
 	golang.org/x/net v0.8.0
 )
