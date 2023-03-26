@@ -15,18 +15,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	if username == "" || password == "" {
-		writeError(w, http.StatusBadRequest, "Required field(s) can't be empty")
+		writeError(w, ErrRequired, nil)
 		return
 	}
 
 	account, err := queries.UserLogin(r.Context(), username)
 	if err := auth.CompareHashAndPassword(account.PasswordHash, password); err != nil {
-		writeError(w, http.StatusUnauthorized, "Unknown username or password")
+		writeError(w, ErrUnauthorized, err)
 	}
 
 	token, expiry, err := auth.CreateUserToken(username, account.AccountId, 1*time.Hour)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Failed to issue token")
+		writeError(w, ErrTokenIssue, err)
 	}
 
 	// TODO: spawn goroutine to update last login timestamp here
@@ -39,17 +39,17 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	if username == "" || password == "" {
-		writeError(w, http.StatusBadRequest, "Required field(s) can't be empty")
+		writeError(w, ErrRequired, nil)
 		return
 	}
 
 	passwordHashBytes, err := auth.HashPassword(password)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Failed to hash password: "+err.Error())
+		writeError(w, ErrHash, err)
 	}
 
 	if err := queries.UserRegister(r.Context(), username, string(passwordHashBytes)); err != nil {
-		writeError(w, http.StatusInternalServerError, "Failed to register user: "+err.Error())
+		writeError(w, ErrDatabase, err)
 		return
 	}
 }

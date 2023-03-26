@@ -11,7 +11,8 @@ import (
 func AdminInfo(w http.ResponseWriter, r *http.Request) {
 	info, err := queries.GetAdminInfo()
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		writeError(w, ErrDatabase, err)
+		return
 	}
 	json.NewEncoder(w).Encode(info)
 }

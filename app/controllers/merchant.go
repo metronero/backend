@@ -13,13 +13,13 @@ import (
 func MerchantInfo(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "Invalid token")
+		writeError(w, ErrInvalidToken, err)
+		return
 	}
-
 	id := token["id"].(string)
 	info, err := queries.GetMerchantInfo(id)
 	if err != nil {
-		writeError(w, http.StatusInternalServerError, err.Error())
+		writeError(w, ErrDatabase, err)
 	}
 	json.NewEncoder(w).Encode(info)
 }
