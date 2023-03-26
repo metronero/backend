@@ -32,3 +32,7 @@ type PaymentRequest struct {
 	// Merchant provided extra data field
 	ExtraData string `json:"extra_data,omitempty"`
 }
+
+type RequestPaymentResponse struct {
+	PaymentId string `json:"payment_id"`
+}
