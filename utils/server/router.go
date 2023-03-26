@@ -18,21 +18,28 @@ func registerRoutes() *chi.Mux {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	//r.Get("/health", controllers.Health)
 	r.Post("/login", controllers.Login)
 	r.Post("/register", controllers.Register)
+	// r.Get("/health", controllers.Health)
 
 	r.Route("/merchant", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(jwtauth.Verifier(config.JwtSecret))
 			r.Use(jwtauth.Authenticator)
 			r.Get("/", controllers.MerchantInfo)
-			r.Get("/withdrawal", controllers.MerchantGetWithdrawals)
-			r.Get("/payment", controllers.MerchantGetPayments)
-			/*r.Post("/template", controllers.Template)
-			r.Post("/payment", controllers.GetPayment)
-			r.Post("/create_payment", controllers.CreatePayment)
-			r.Post("/withdraw", controllers.Withdraw)*/
+			r.Post("/", controllers.MerchantUpdate)
+			r.Route("/withdrawal", func(r chi.Router) {
+				r.Get("/", controllers.MerchantGetWithdrawals)
+				r.Post("/", controllers.MerchantWithdrawFunds)
+			})
+			r.Route("/payment", func(r chi.Router) {
+				r.Get("/", controllers.MerchantGetPayments)
+				r.Post("/", controllers.MerchantCreatePaymentReq)
+			})
+			r.Route("/template", func(r chi.Router) {
+				r.Get("/", controllers.MerchantGetTemplate)
+				r.Post("/", controllers.MerchantPostTemplate)
+			})
 		})
 	})
 
@@ -42,8 +49,24 @@ func registerRoutes() *chi.Mux {
 			r.Use(jwtauth.Authenticator)
 			r.Use(middlewareAdminArea)
 			r.Get("/", controllers.AdminInfo)
-			r.Get("/withdrawal", controllers.AdminGetWithdrawals)
-			r.Get("/payment", controllers.AdminGetPayments)
+			r.Route("/instance", func(r chi.Router) {
+				r.Get("/", controllers.GetInstance)
+				r.Post("/", controllers.EditInstance)
+			})
+			r.Route("/withdrawal", func(r chi.Router) {
+				r.Get("/", controllers.AdminGetWithdrawals)
+				r.Get("/{merchant_id}", controllers.GetWithdrawalsByMerchant)
+			})
+			r.Route("/payment", func(r chi.Router) {
+				r.Get("/", controllers.AdminGetPayments)
+				r.Get("/{merchant_id}", controllers.GetPaymentsByMerchant)
+			})
+			r.Route("/merchant", func(r chi.Router) {
+				r.Get("/{merchant_id}", controllers.AdminGetMerchant)
+				r.Post("/{merchant_id}", controllers.AdminUpdateMerchant)
+				r.Delete("/{merchant_id}", controllers.AdminDeleteMerchant)
+				r.Get("/", controllers.AdminGetMerchantList)
+			})
 		})
 	})
 

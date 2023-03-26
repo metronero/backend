@@ -18,6 +18,8 @@ func AdminGetWithdrawals(w http.ResponseWriter, r *http.Request) {
         json.NewEncoder(w).Encode(p)
 }
 
+func MerchantWithdrawFunds(w http.ResponseWriter, r *http.Request) {}
+
 func MerchantGetWithdrawals(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
         if err != nil {
@@ -32,3 +34,5 @@ func MerchantGetWithdrawals(w http.ResponseWriter, r *http.Request) {
         }
         json.NewEncoder(w).Encode(p)
 }
+
+func GetWithdrawalsByMerchant(w http.ResponseWriter, r *http.Request) {}

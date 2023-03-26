@@ -23,3 +23,18 @@ func MerchantInfo(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(info)
 }
+
+func MerchantUpdate(w http.ResponseWriter, r *http.Request) {
+}
+
+func AdminGetMerchantList(w http.ResponseWriter, r *http.Request) {
+}
+
+func AdminGetMerchant(w http.ResponseWriter, r *http.Request) {
+}
+
+func AdminUpdateMerchant(w http.ResponseWriter, r *http.Request) {
+}
+
+func AdminDeleteMerchant(w http.ResponseWriter, r *http.Request) {
+}

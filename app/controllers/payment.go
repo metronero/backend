@@ -18,6 +18,10 @@ func AdminGetPayments(w http.ResponseWriter, r *http.Request) {
         json.NewEncoder(w).Encode(p)
 }
 
+func MerchantCreatePaymentReq(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func MerchantGetPayments(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
         if err != nil {
@@ -32,3 +36,5 @@ func MerchantGetPayments(w http.ResponseWriter, r *http.Request) {
         }
         json.NewEncoder(w).Encode(p)
 }
+
+func GetPaymentsByMerchant(w http.ResponseWriter, r *http.Request) {}
