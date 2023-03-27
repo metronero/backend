@@ -42,3 +42,21 @@ func ConfigureMerchant(ctx context.Context, id string, conf *models.MerchantSett
 	    "UPDATE merchants SET commission = $1 AND disabled = $2 WHERE account_id = $3",
 	    conf.CommissionRate, conf.Disabled, id)
 }
+
+func GetMerchantList(ctx context.Context) ([]models.Merchant, error) {
+	var merchants []models.Merchant
+	rows, err := db.Query(ctx,
+	    "SELECT a.account_id,a.commission,a.disabled,b.username from merchants a,accounts b where a.account_id=b.account_id")
+	if err != nil {
+		return merchants, err
+	}
+	for rows.Next() {
+		var temp models.Merchant
+		if err := rows.Scan(&temp.AccountId, &temp.CommissionRate, &temp.Disabled,
+		    &temp.Name); err != nil {
+			return merchants, err
+		}
+		merchants = append(merchants, temp)
+	}
+	return merchants, nil
+}

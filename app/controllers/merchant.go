@@ -40,7 +40,12 @@ func MerchantUpdate(w http.ResponseWriter, r *http.Request) {
 }
 
 func AdminGetMerchantList(w http.ResponseWriter, r *http.Request) {
-
+	list, err := queries.GetMerchantList(r.Context())
+	if err != nil {
+		writeError(w, ErrDatabase, err)
+		return
+	}
+	json.NewEncoder(w).Encode(list)
 }
 
 func AdminGetMerchant(w http.ResponseWriter, r *http.Request) {
