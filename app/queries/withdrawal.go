@@ -24,8 +24,8 @@ func GetWithdrawalsByAccount(ctx context.Context, id string) ([]models.Withdrawa
 
 	for rows.Next() {
 		var temp models.Withdrawal
-		if err := rows.Scan(&temp.Id, &temp.MerchantName, &temp.Amount,
-		    &temp.Date); err != nil {
+		if err := rows.Scan(&temp.Id, &temp.Amount, &temp.Date,
+		    &temp.MerchantName); err != nil {
 			return withdrawals, err
 		}
 		withdrawals = append(withdrawals, temp)
