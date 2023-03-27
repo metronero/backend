@@ -49,6 +49,13 @@ func AdminGetMerchantList(w http.ResponseWriter, r *http.Request) {
 }
 
 func AdminGetMerchant(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "merchant_id")
+	m, err := queries.GetMerchantById(r.Context(), id)
+	if err != nil {
+		writeError(w, ErrDatabase, err)
+		return
+	}
+	json.NewEncoder(w).Encode(m)
 }
 
 func AdminUpdateMerchant(w http.ResponseWriter, r *http.Request) {

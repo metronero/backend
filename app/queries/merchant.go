@@ -60,3 +60,15 @@ func GetMerchantList(ctx context.Context) ([]models.Merchant, error) {
 	}
 	return merchants, nil
 }
+
+func GetMerchantById(ctx context.Context, id string) (models.Merchant, error) {
+	var m models.Merchant
+	row, err := db.QueryRow(ctx,
+	    "SELECT a.account_id,a.commission,a.disabled,b.username from merchants a,accounts b " +
+	    "where a.account_id=b.account_id AND a.account_id=$1", id)
+	if err != nil {
+		return m, err
+	}
+	err = row.Scan(&m.AccountId, &m.CommissionRate, &m.Disabled, &m.Name)
+	return m, err
+}
