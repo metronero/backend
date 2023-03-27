@@ -10,9 +10,9 @@ import (
 
 func GetWithdrawalsByAccount(ctx context.Context, id string) ([]models.Withdrawal, error) {
 	// If an account ID was specified, get withdrawals that belong to this account.
-	query := "SELECT id, amount, withdraw_date, merchant_name FROM withdrawals"
+	query := "SELECT withdrawal_id, amount, withdraw_date, merchant_name FROM withdrawals"
 	if id != "" {
-		query = fmt.Sprintf("%s WHERE account_id=%s", query, id)
+		query = fmt.Sprintf("%s WHERE account_id='%s'", query, id)
 	}
 
 	var withdrawals []models.Withdrawal

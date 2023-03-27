@@ -12,9 +12,9 @@ import (
 
 func GetPaymentsByAccount(ctx context.Context, id string) ([]models.Payment, error) {
 	// If an account ID was specified, get payments that belong to this account.
-	query := "SELECT id, merchant_name, amount, fee, order_id, status, last_update FROM payments"
+	query := "SELECT payment_id, merchant_name, amount, fee, order_id, status, last_update FROM payments"
 	if id != "" {
-		query = fmt.Sprintf("%s WHERE account_id=%s", query, id)
+		query = fmt.Sprintf("%s WHERE account_id='%s'", query, id)
 	}
 
 	var payments []models.Payment
