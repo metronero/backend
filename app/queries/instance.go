@@ -50,3 +50,9 @@ func InstanceStats(ctx context.Context) (models.InstanceStats, error) {
 	}
 	return stats, nil
 }
+
+func UpdateInstance(ctx context.Context, conf *models.Instance) error {
+	return db.Exec(ctx,
+	    "UPDATE instance SET custodial_mode=$1,default_commission=$2,registrations_allowed=$3,withdrawal_times=$4",
+	    conf.CustodialMode, conf.DefaultCommission, conf.RegistrationsAllowed, conf.WithdrawalTimes)
+}

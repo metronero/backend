@@ -1,7 +1,7 @@
 package models
 
 type Instance struct {
-	Version           string `json:"version"`
+	Version           string `json:"version,omitempty"`
 	DefaultCommission uint64 `json:"default_commission"`
 
 	// Allow multiple merchants to use this instance and store their funds
