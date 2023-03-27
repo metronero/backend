@@ -62,4 +62,8 @@ func AdminUpdateMerchant(w http.ResponseWriter, r *http.Request) {
 }
 
 func AdminDeleteMerchant(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "merchant_id")
+	if err := queries.DeleteMerchantById(r.Context(), id); err != nil {
+		writeError(w, ErrDatabase, err)
+	}
 }

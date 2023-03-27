@@ -72,3 +72,8 @@ func GetMerchantById(ctx context.Context, id string) (models.Merchant, error) {
 	err = row.Scan(&m.AccountId, &m.CommissionRate, &m.Disabled, &m.Name)
 	return m, err
 }
+
+func DeleteMerchantById(ctx context.Context, id string) error {
+	return db.Exec(ctx,
+	    "DELETE FROM accounts WHERE account_id=$1", id)
+}
