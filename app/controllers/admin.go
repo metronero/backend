@@ -9,7 +9,7 @@ import (
 
 // Recaps relevant activity to be displayed on the admin dashboard.
 func AdminInfo(w http.ResponseWriter, r *http.Request) {
-	info, err := queries.GetAdminInfo()
+	info, err := queries.GetAdminInfo(r.Context())
 	if err != nil {
 		writeError(w, ErrDatabase, err)
 		return
