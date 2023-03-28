@@ -59,6 +59,15 @@ func AdminGetMerchant(w http.ResponseWriter, r *http.Request) {
 }
 
 func AdminUpdateMerchant(w http.ResponseWriter, r *http.Request) {
+	var settings models.MerchantSettings
+	if err := json.NewDecoder(r.Body).Decode(&settings); err != nil {
+		writeError(w, ErrBadRequest, nil)
+		return
+	}
+	if err := queries.AdminEditMerchant(r.Context(), &settings); err != nil {
+		writeError(w, ErrBadRequest, nil)
+	}
+
 }
 
 func AdminDeleteMerchant(w http.ResponseWriter, r *http.Request) {

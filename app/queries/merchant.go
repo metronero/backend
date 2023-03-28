@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	db "gitlab.com/moneropay/metronero/metronero-backend/platform/database"
-
 	"gitlab.com/moneropay/metronero/metronero-backend/app/models"
 )
 
