@@ -25,8 +25,8 @@ type MerchantAPIKeys struct {
 }
 
 type MerchantSettings struct {
-	CommissionRate uint64 `json:"commission_rate,omitempty"`
-	Disabled       bool   `json:"disabled,omitempty"`
+	CommissionRate *uint64 `json:"commission_rate,omitempty"`
+	Disabled       *bool   `json:"disabled,omitempty"`
 }
 
 type MerchantDashboardInfo struct {

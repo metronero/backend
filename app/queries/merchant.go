@@ -2,6 +2,7 @@ package queries
 
 import (
 	"context"
+	"fmt"
 
 	db "gitlab.com/moneropay/metronero/metronero-backend/platform/database"
 
@@ -38,9 +39,16 @@ func MerchantStats(ctx context.Context, id string) (models.MerchantStats, error)
 }
 
 func ConfigureMerchant(ctx context.Context, id string, conf *models.MerchantSettings) error {
-	return db.Exec(ctx,
-	    "UPDATE merchants SET commission = $1 AND disabled = $2 WHERE account_id = $3",
-	    conf.CommissionRate, conf.Disabled, id)
+	query := "UPDATE merchants SET"
+	if conf.CommissionRate != nil && conf.Disabled != nil {
+		query = fmt.Sprintf("%s commission=%d,disabled=%t", query,
+		    *conf.CommissionRate, *conf.Disabled)
+	} else if conf.CommissionRate != nil {
+		query = fmt.Sprintf("%s commission=%d", query, *conf.CommissionRate)
+	} else if conf.Disabled != nil {
+		query = fmt.Sprintf("%s disabled=%t", query, *conf.Disabled)
+	}
+	return db.Exec(ctx, query)
 }
 
 func GetMerchantList(ctx context.Context) ([]models.Merchant, error) {
