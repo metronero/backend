@@ -7,12 +7,15 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-
-	"gitlab.com/moneropay/metronero/metronero-frontend/utils/config"
 )
 
-func backendRequest(token, method, endpoint string, body interface{}) ([]byte, error) {
-	endpoint, err := url.JoinPath(config.Backend, endpoint)
+type ApiClient struct {
+	Client  http.Client
+	BaseUrl string
+}
+
+func (c *ApiClient) backendRequest(token, method, endpoint string, body interface{}) ([]byte, error) {
+	endpoint, err := url.JoinPath(c.BaseUrl, endpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +33,7 @@ func backendRequest(token, method, endpoint string, body interface{}) ([]byte, e
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
-	res, err := http.DefaultClient.Do(req)
+	res, err := c.Client.Do(req)
 	if err != nil {
 		return nil, err
 	}

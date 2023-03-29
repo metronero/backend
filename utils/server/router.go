@@ -5,8 +5,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/jwtauth/v5"
 
-	"gitlab.com/moneropay/metronero/metronero-backend/app/controllers"
-	"gitlab.com/moneropay/metronero/metronero-backend/utils/config"
+	"gitlab.com/metronero/backend/app/controllers"
+	"gitlab.com/metronero/backend/utils/config"
 )
 
 func registerRoutes() *chi.Mux {

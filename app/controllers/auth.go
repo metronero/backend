@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"gitlab.com/moneropay/metronero/metronero-backend/app/models"
-	"gitlab.com/moneropay/metronero/metronero-backend/app/queries"
-	"gitlab.com/moneropay/metronero/metronero-backend/utils/auth"
+	"gitlab.com/metronero/backend/app/models"
+	"gitlab.com/metronero/backend/app/queries"
+	"gitlab.com/metronero/backend/utils/auth"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {

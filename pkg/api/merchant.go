@@ -3,11 +3,11 @@ package api
 import (
 	"encoding/json"
 
-	"gitlab.com/moneropay/metronero/metronero-backend/app/models"
+	"gitlab.com/metronero/backend/app/models"
 )
 
-func GetMerchantList(token string) ([]models.Merchant, error) {
-	resp, err := backendRequest(token, "GET", "/admin/merchant", nil)
+func (c *ApiClient) GetMerchantList(token string) ([]models.Merchant, error) {
+	resp, err := c.backendRequest(token, "GET", "/admin/merchant", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -16,9 +16,9 @@ func GetMerchantList(token string) ([]models.Merchant, error) {
 	return m, err
 }
 
-func GetMerchantById(token, merchantId string) (models.Merchant, error) {
+func (c *ApiClient) GetMerchantById(token, merchantId string) (models.Merchant, error) {
 	var m models.Merchant
-	resp, err := backendRequest(token, "GET", "/admin/merchant/" + merchantId, nil)
+	resp, err := c.backendRequest(token, "GET", "/admin/merchant/"+merchantId, nil)
 	if err != nil {
 		return m, err
 	}
@@ -26,9 +26,9 @@ func GetMerchantById(token, merchantId string) (models.Merchant, error) {
 	return m, err
 }
 
-func GetMerchantInfo(token string) (models.MerchantDashboardInfo, error) {
+func (c *ApiClient) GetMerchantInfo(token string) (models.MerchantDashboardInfo, error) {
 	var m models.MerchantDashboardInfo
-	resp, err := backendRequest(token, "GET", "/merchant", nil)
+	resp, err := c.backendRequest(token, "GET", "/merchant", nil)
 	if err != nil {
 		return m, err
 	}
@@ -36,9 +36,9 @@ func GetMerchantInfo(token string) (models.MerchantDashboardInfo, error) {
 	return m, err
 }
 
-func GetMerchantPayments(token string) ([]models.Payment, error) {
+func (c *ApiClient) GetMerchantPayments(token string) ([]models.Payment, error) {
 	var p []models.Payment
-	resp, err := backendRequest(token, "GET", "/merchant/payment", nil)
+	resp, err := c.backendRequest(token, "GET", "/merchant/payment", nil)
 	if err != nil {
 		return p, err
 	}
@@ -46,9 +46,9 @@ func GetMerchantPayments(token string) ([]models.Payment, error) {
 	return p, err
 }
 
-func GetMerchantWithdrawals(token string) ([]models.Withdrawal, error) {
+func (c *ApiClient) GetMerchantWithdrawals(token string) ([]models.Withdrawal, error) {
 	var p []models.Withdrawal
-	resp, err := backendRequest(token, "GET", "/merchant/withdrawal", nil)
+	resp, err := c.backendRequest(token, "GET", "/merchant/withdrawal", nil)
 	if err != nil {
 		return p, err
 	}
@@ -56,7 +56,7 @@ func GetMerchantWithdrawals(token string) ([]models.Withdrawal, error) {
 	return p, err
 }
 
-func DeleteMerchantById(token, id string) error {
-	_, err := backendRequest(token, "DELETE", "/admin/merchant/" + id, nil)
+func (c *ApiClient) DeleteMerchantById(token, id string) error {
+	_, err := c.backendRequest(token, "DELETE", "/admin/merchant/"+id, nil)
 	return err
 }

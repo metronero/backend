@@ -6,8 +6,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"gitlab.com/moneropay/metronero/metronero-backend/app/models"
-	db "gitlab.com/moneropay/metronero/metronero-backend/platform/database"
+	"gitlab.com/metronero/backend/app/models"
+	db "gitlab.com/metronero/backend/platform/database"
 )
 
 // Given an username, returns password hash

@@ -12,7 +12,7 @@ import (
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
 
-	"gitlab.com/moneropay/metronero/metronero-backend/utils/config"
+	"gitlab.com/metronero/backend/utils/config"
 )
 
 func StartWithGracefulShutdown() {

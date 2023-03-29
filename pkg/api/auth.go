@@ -7,9 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"gitlab.com/moneropay/metronero/metronero-backend/app/models"
-
-	"gitlab.com/moneropay/metronero/metronero-frontend/utils/config"
+	"gitlab.com/metronero/backend/app/models"
 )
 
 var (
@@ -17,8 +15,8 @@ var (
 	ErrRegisterFail = errors.New("Failed to register new user.")
 )
 
-func UserLogin(username, password string) (*models.ApiTokenInfo, error) {
-	endpoint, err := url.JoinPath(config.Backend, "/login")
+func (c *ApiClient) UserLogin(username, password string) (*models.ApiTokenInfo, error) {
+	endpoint, err := url.JoinPath(c.BaseUrl, "/login")
 	if err != nil {
 		return nil, err
 	}
@@ -45,8 +43,8 @@ func UserLogin(username, password string) (*models.ApiTokenInfo, error) {
 	return &token, err
 }
 
-func UserRegister(username, password string) error {
-	endpoint, err := url.JoinPath(config.Backend, "/register")
+func (c *ApiClient) UserRegister(username, password string) error {
+	endpoint, err := url.JoinPath(c.BaseUrl, "/register")
 	if err != nil {
 		return err
 	}

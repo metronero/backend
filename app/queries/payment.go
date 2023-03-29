@@ -6,8 +6,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"gitlab.com/moneropay/metronero/metronero-backend/app/models"
-	db "gitlab.com/moneropay/metronero/metronero-backend/platform/database"
+	"gitlab.com/metronero/backend/app/models"
+	db "gitlab.com/metronero/backend/platform/database"
 )
 
 func GetPaymentsByAccount(ctx context.Context, id string) ([]models.Payment, error) {
@@ -27,7 +27,7 @@ func GetPaymentsByAccount(ctx context.Context, id string) ([]models.Payment, err
 	for rows.Next() {
 		var temp models.Payment
 		if err := rows.Scan(&temp.InvoiceId, &temp.MerchantName, &temp.Amount, &temp.Fee,
-		    &temp.OrderId, &temp.Status, &temp.LastUpdate); err != nil {
+			&temp.OrderId, &temp.Status, &temp.LastUpdate); err != nil {
 			// TODO: check in here whether if the error was caused unknown account_id
 			// or database related error
 			return payments, err
@@ -43,11 +43,11 @@ func GetPayments(ctx context.Context) ([]models.Payment, error) {
 }
 
 func CreatePaymentRequest(ctx context.Context, merchantId, name string,
-    req *models.PaymentRequest) (*models.RequestPaymentResponse, error) {
+	req *models.PaymentRequest) (*models.RequestPaymentResponse, error) {
 	id := uuid.New().String()
 	if err := db.Exec(ctx,
-	    "INSERT INTO payments(payment_id,amount,order_id,merchant_name,account_id)VALUES($1,$2,$3,$4,$5)",
-	    id, req.Amount, req.OrderId, name, merchantId); err != nil {
+		"INSERT INTO payments(payment_id,amount,order_id,merchant_name,account_id)VALUES($1,$2,$3,$4,$5)",
+		id, req.Amount, req.OrderId, name, merchantId); err != nil {
 		return nil, err
 	}
 	return &models.RequestPaymentResponse{PaymentId: id}, nil

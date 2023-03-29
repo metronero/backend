@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"gitlab.com/moneropay/metronero/metronero-backend/app/models"
-	db "gitlab.com/moneropay/metronero/metronero-backend/platform/database"
+	"gitlab.com/metronero/backend/app/models"
+	db "gitlab.com/metronero/backend/platform/database"
 )
 
 func GetWithdrawalsByAccount(ctx context.Context, id string) ([]models.Withdrawal, error) {
@@ -25,7 +25,7 @@ func GetWithdrawalsByAccount(ctx context.Context, id string) ([]models.Withdrawa
 	for rows.Next() {
 		var temp models.Withdrawal
 		if err := rows.Scan(&temp.Id, &temp.Amount, &temp.Date,
-		    &temp.MerchantName); err != nil {
+			&temp.MerchantName); err != nil {
 			return withdrawals, err
 		}
 		withdrawals = append(withdrawals, temp)

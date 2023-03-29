@@ -30,6 +30,6 @@ type InstanceStats struct {
 }
 
 type InstanceInfo struct {
-	Details Instance     `json:"details"`
+	Details Instance      `json:"details"`
 	Stats   InstanceStats `json:"stats"`
 }

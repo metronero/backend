@@ -2,16 +2,16 @@ package database
 
 import (
 	"context"
-	"time"
 	"log"
+	"time"
 
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 
-	"gitlab.com/moneropay/metronero/metronero-backend/utils/config"
+	"gitlab.com/metronero/backend/utils/config"
 )
 
 var Db *pgxpool.Pool
@@ -52,7 +52,10 @@ func QueryRow(ctx context.Context, query string, args ...interface{}) (pgx.Row, 
 func Query(ctx context.Context, query string, args ...interface{}) (pgx.Rows, error) {
 	ctx, cancel := context.WithTimeout(ctx, time.Minute)
 	defer cancel()
-	type queryRet struct { rows pgx.Rows; err error }
+	type queryRet struct {
+		rows pgx.Rows
+		err  error
+	}
 	c := make(chan queryRet, 1)
 	go func() {
 		rows, err := Db.Query(ctx, query, args...)

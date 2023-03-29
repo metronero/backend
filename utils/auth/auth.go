@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/jwtauth/v5"
 	"golang.org/x/crypto/bcrypt"
 
-	"gitlab.com/moneropay/metronero/metronero-backend/utils/config"
+	"gitlab.com/metronero/backend/utils/config"
 )
 
 func CreateUserToken(username, id string, lifetime time.Duration) (string, time.Time, error) {

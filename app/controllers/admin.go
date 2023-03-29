@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"gitlab.com/moneropay/metronero/metronero-backend/app/queries"
+	"gitlab.com/metronero/backend/app/queries"
 )
 
 // Recaps relevant activity to be displayed on the admin dashboard.

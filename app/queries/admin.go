@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	db "gitlab.com/moneropay/metronero/metronero-backend/platform/database"
-	"gitlab.com/moneropay/metronero/metronero-backend/app/models"
+	"gitlab.com/metronero/backend/app/models"
+	db "gitlab.com/metronero/backend/platform/database"
 )
 
 func GetAdminInfo(ctx context.Context) (*models.AdminDashboardInfo, error) {
 	var (
-		a models.AdminDashboardInfo
+		a   models.AdminDashboardInfo
 		err error
 	)
 	if a.Stats, err = InstanceStats(ctx); err != nil {
@@ -26,7 +26,7 @@ func AdminEditMerchant(ctx context.Context, conf *models.MerchantSettings) error
 	query := "UPDATE merchants SET"
 	if conf.CommissionRate != nil && conf.Disabled != nil {
 		query = fmt.Sprintf("%s commission=%d,disabled=%t", query,
-		    *conf.CommissionRate, *conf.Disabled)
+			*conf.CommissionRate, *conf.Disabled)
 	} else if conf.CommissionRate != nil {
 		query = fmt.Sprintf("%s commission=%d", query, *conf.CommissionRate)
 	} else if conf.Disabled != nil {

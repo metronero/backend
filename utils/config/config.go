@@ -11,11 +11,11 @@ import (
 )
 
 var (
-	BindAddr          string
-	PostgresUri       string
-	JwtSecret         *jwtauth.JWTAuth
-	CallbackUrl       string
-	MoneroPay         string
+	BindAddr    string
+	PostgresUri string
+	JwtSecret   *jwtauth.JWTAuth
+	CallbackUrl string
+	MoneroPay   string
 )
 
 func Load() {
@@ -32,6 +32,6 @@ func Load() {
 	JwtSecret = jwtauth.New("HS256", []byte(jwtSecretStr), nil)
 	if logFormat == "pretty" {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr,
-		    TimeFormat: time.RFC3339})
+			TimeFormat: time.RFC3339})
 	}
 }
