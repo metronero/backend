@@ -10,7 +10,7 @@ import (
 )
 
 type ApiClient struct {
-	Client  http.Client
+	Client  *http.Client
 	BaseUrl string
 }
 
