@@ -67,7 +67,6 @@ func AdminUpdateMerchant(w http.ResponseWriter, r *http.Request) {
 	if err := queries.AdminEditMerchant(r.Context(), &settings); err != nil {
 		writeError(w, ErrBadRequest, nil)
 	}
-
 }
 
 func AdminDeleteMerchant(w http.ResponseWriter, r *http.Request) {

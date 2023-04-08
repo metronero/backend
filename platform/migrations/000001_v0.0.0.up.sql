@@ -71,10 +71,11 @@ CREATE TABLE IF NOT EXISTS payments (
 	callback_url text,
 	address text NOT NULL,
 	callback_data text,
-	status text NOT NULL DEFAULT 'pending',
+	status text NOT NULL DEFAULT 'Pending',
 	last_update timestamp NOT NULL,
 	account_id UUID REFERENCES accounts ON DELETE CASCADE,
-	merchant_name text
+	merchant_name text,
+	merchant_extra text
 );
 
 CREATE TABLE IF NOT EXISTS withdrawals (

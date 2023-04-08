@@ -17,11 +17,11 @@ type Payment struct {
 	LastUpdate time.Time `json:"last_update"`
 }
 
-type PaymentRequest struct {
+type GetPaymentResponse struct {
 	Payment
-	AcceptUrl   string `json:"accept_url"`
-	CancelUrl   string `json:"cancel_url"`
-	CallbackUrl string `json:"callback_url"`
+	AcceptUrl   string `json:"accept_url,omitempty"`
+	CancelUrl   string `json:"cancel_url,omitempty"`
+	CallbackUrl string `json:"callback_url,omitempty"`
 
 	// Index of subaddress that was used to accept this payment
 	AddressIndex uint64 `json:"address_index"`
@@ -33,6 +33,23 @@ type PaymentRequest struct {
 	ExtraData string `json:"extra_data,omitempty"`
 }
 
-type RequestPaymentResponse struct {
+type PostPaymentRequest struct {
+	Amount       uint64 `json:"amount"`
+
+	// Merchant provided ID for this payment
+	OrderId string `json:"order_id,omitempty"`
+
+	// URL for redirection based on customer actions.
+	// These variables are passed to the merchant template.
+	AcceptUrl   string `json:"accept_url,omitempty"`
+	CancelUrl   string `json:"cancel_url,omitempty"`
+	CallbackUrl string `json:"callback_url,omitempty"`
+
+	// Merchant provided extra data field
+	ExtraData string `json:"extra_data,omitempty"`
+}
+
+type PostPaymentResponse struct {
 	PaymentId string `json:"payment_id"`
+	Address string `json:"address"`
 }

@@ -3,8 +3,7 @@ package queries
 import (
 	"context"
 	"fmt"
-
-	"github.com/google/uuid"
+	"time"
 
 	"gitlab.com/metronero/backend/app/models"
 	db "gitlab.com/metronero/backend/platform/database"
@@ -12,7 +11,7 @@ import (
 
 func GetPaymentsByAccount(ctx context.Context, id string) ([]models.Payment, error) {
 	// If an account ID was specified, get payments that belong to this account.
-	query := "SELECT payment_id, merchant_name, amount, fee, order_id, status, last_update FROM payments"
+	query := "SELECT payment_id,merchant_name,amount,fee,order_id,status,last_update FROM payments"
 	if id != "" {
 		query = fmt.Sprintf("%s WHERE account_id='%s'", query, id)
 	}
@@ -42,13 +41,17 @@ func GetPayments(ctx context.Context) ([]models.Payment, error) {
 	return GetPaymentsByAccount(ctx, "")
 }
 
-func CreatePaymentRequest(ctx context.Context, merchantId, name string,
-	req *models.PaymentRequest) (*models.RequestPaymentResponse, error) {
-	id := uuid.New().String()
-	if err := db.Exec(ctx,
-		"INSERT INTO payments(payment_id,amount,order_id,merchant_name,account_id)VALUES($1,$2,$3,$4,$5)",
-		id, req.Amount, req.OrderId, name, merchantId); err != nil {
-		return nil, err
-	}
-	return &models.RequestPaymentResponse{PaymentId: id}, nil
+func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, name string,
+	req *models.PostPaymentRequest) error {
+	return db.Exec(ctx,
+	    "INSERT INTO payments(payment_id,amount,order_id,merchant_name," +
+	    "account_id,accept_url,cancel_url,callback_url,merchant_extra)" +
+	    "VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)", paymentId, req.Amount, req.OrderId,
+	    name, merchantId, req.AcceptUrl, req.CancelUrl, req.CallbackUrl, req.ExtraData)
+}
+
+func UpdatePayment(ctx context.Context, id, status, data string) error {
+	return db.Exec(ctx,
+	    "UPDATE payments SET status=$1,callback_data=$2,last_update=$3 " +
+	    "WHERE payment_id=$4", status, data, time.Now(), id)
 }

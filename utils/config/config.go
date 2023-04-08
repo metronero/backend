@@ -11,15 +11,20 @@ import (
 )
 
 var (
-	BindAddr    string
-	PostgresUri string
-	JwtSecret   *jwtauth.JWTAuth
-	CallbackUrl string
-	MoneroPay   string
+	BindAddr     string
+	CallbackAddr string
+	PostgresUri  string
+	JwtSecret    *jwtauth.JWTAuth
+	CallbackUrl  string
+	MoneroPay    string
 )
 
 func Load() {
 	flag.StringVar(&BindAddr, "bind", "localhost:5001", "Bind address:port")
+
+	// CallbackAddr is passed to MoneroPay on payment request creation.
+	// This value should be accessible to the MoneroPay instance.
+	flag.StringVar(&CallbackAddr, "callback-addr", "http://localhost:5001", "http(s)://domain:port for MoneroPay callback registration")
 	flag.StringVar(&PostgresUri, "postgres", "postgresql://metronero:m3tr0n3r0@localhost:5432/metronero?sslmode=disable", "PostgreSQL connection string")
 	var jwtSecretStr string
 	flag.StringVar(&jwtSecretStr, "token-secret", "aabbccddeeffgg", "JWT secret")

@@ -34,7 +34,7 @@ func registerRoutes() *chi.Mux {
 			})
 			r.Route("/payment", func(r chi.Router) {
 				r.Get("/", controllers.MerchantGetPayments)
-				r.Post("/", controllers.MerchantCreatePaymentReq)
+				r.Post("/", controllers.PostMerchantPayment)
 			})
 			r.Route("/template", func(r chi.Router) {
 				r.Get("/", controllers.MerchantGetTemplate)
@@ -70,10 +70,8 @@ func registerRoutes() *chi.Mux {
 		})
 	})
 
-	/*
-		r.Get("/p/{uuid}", controllers.Payment)
-		r.Post("/callback/{uuid}", controllers.Callback)
-	*/
+	// For handling MoneroPay callbacks
+	r.Post("/callback/{uuid}", controllers.Callback)
 
 	return r
 }

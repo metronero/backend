@@ -23,6 +23,7 @@ var (
 	ErrNoId         = &ApiError{Code: 7, Msg: "Unknown resource ID.", status: 400}
 	ErrBadRequest   = &ApiError{Code: 8, Msg: "Invalid request body.", status: 400}
 	ErrDatabase     = &ApiError{Code: 10, Msg: "Database error.", status: 500}
+	ErrMoneropay    = &ApiError{Code: 11, Msg: "MoneroPay error.", status: 500}
 )
 
 func writeError(w http.ResponseWriter, apiErr *ApiError, err error) {

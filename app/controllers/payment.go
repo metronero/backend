@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 
 	"gitlab.com/metronero/backend/app/models"
 	"gitlab.com/metronero/backend/app/queries"
+	"gitlab.com/metronero/backend/utils/moneropay"
 )
 
 func AdminGetPayments(w http.ResponseWriter, r *http.Request) {
@@ -45,22 +47,30 @@ func GetPaymentsByMerchant(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p)
 }
 
-func MerchantCreatePaymentReq(w http.ResponseWriter, r *http.Request) {
+// Create a new payment request
+func PostMerchantPayment(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
 		writeError(w, ErrInvalidToken, err)
 		return
 	}
-	id := token["id"].(string)
+	merchantId := token["id"].(string)
 	name := token["username"].(string)
-	var req models.PaymentRequest
+	var req models.PostPaymentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, ErrBadRequest, nil)
 		return
 	}
-	res, err := queries.CreatePaymentRequest(r.Context(), id, name, &req)
+	paymentId := uuid.New().String()
+	subaddress, err := moneropay.CreatePayment(req.Amount, paymentId)
 	if err != nil {
-		writeError(w, ErrDatabase, nil)
+		writeError(w, ErrMoneropay, nil)
+		return
 	}
+	if err := queries.CreatePaymentRequest(r.Context(), paymentId, merchantId, name, &req); err != nil {
+		writeError(w, ErrDatabase, nil)
+		return
+	}
+	res := &models.PostPaymentResponse{PaymentId: paymentId, Address: subaddress}
 	json.NewEncoder(w).Encode(res)
 }
