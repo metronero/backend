@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"encoding/base64"
 	"html/template"
 	"io"
 	"net/http"
@@ -10,6 +11,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
+	qrcode "github.com/skip2/go-qrcode"
+	"gitlab.com/moneropay/go-monero/walletrpc"
 
 	"gitlab.com/metronero/backend/app/models"
 	"gitlab.com/metronero/backend/app/queries"
@@ -40,6 +43,12 @@ func MerchantGetTemplate(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	address := "46VGoe3bKWTNuJdwNjjr6oGHLVtV1c9QpXFP9M2P22bbZNU7aGmtuLe6PEDRAeoc3L7pSjfRHMmqpSF5M59eWemEQ2kwYuw"
+	png, err := qrcode.Encode(address, qrcode.Medium, 256)
+	if err != nil {
+		writeError(w, ErrTemplateLoad, err)
+	}
+
 	// Execute with dummy data
 	t.Execute(w, &models.PaymentPageInfo{
 		InvoiceId:    "0b1b6a94-9ec2-4bdf-8251-6a46aca6a332",
@@ -49,8 +58,9 @@ func MerchantGetTemplate(w http.ResponseWriter, r *http.Request) {
 		OrderId:      "AI6X21",
 		Status:       "Pending",
 		LastUpdate:   time.Now(),
-		Address:      "46VGoe3bKWTNuJdwNjjr6oGHLVtV1c9QpXFP9M2P22bbZNU7aGmtuLe6PEDRAeoc3L7pSjfRHMmqpSF5M59eWemEQ2kwYuw",
+		Address:      address,
 		ExtraData:    "Sneakers x 2, Jacket x 1",
+		Qr:           base64.StdEncoding.EncodeToString(png),
 	})
 }
 
@@ -111,5 +121,12 @@ func GetPaymentPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
+        png, err := qrcode.Encode(p.Address, qrcode.Medium, 256)
+        if err != nil {
+                writeError(w, ErrTemplateLoad, err)
+        }
+	p.Qr = base64.StdEncoding.EncodeToString(png)
+	p.AmountFloat = walletrpc.XMRToDecimal(p.Amount)
 	t.Execute(w, p)
 }

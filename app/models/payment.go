@@ -31,6 +31,7 @@ type PaymentPageInfo struct {
 	AcceptUrl   string    `json:"accept_url,omitempty"`
 	CancelUrl   string    `json:"cancel_url,omitempty"`
 	Address     string    `json:"address"`
+	Qr          string    `json:"qr"`
 
 	// Merchant provided extra data field
 	ExtraData string `json:"extra_data,omitempty"`
