@@ -24,8 +24,9 @@ var (
 	ErrBadRequest   = &ApiError{Code: 8, Msg: "Invalid request body.", status: 400}
 	ErrTemplateSave = &ApiError{Code: 9, Msg: "Failed to save template.", status: 500}
 	ErrTemplateLoad = &ApiError{Code: 10, Msg: "Failed to load template.", status: 500}
-	ErrDatabase     = &ApiError{Code: 11, Msg: "Database error.", status: 500}
-	ErrMoneropay    = &ApiError{Code: 12, Msg: "MoneroPay error.", status: 500}
+	ErrTemplateDelete = &ApiError{Code: 11, Msg: "Failed to delete template.", status: 500}
+	ErrDatabase     = &ApiError{Code: 12, Msg: "Database error.", status: 500}
+	ErrMoneropay    = &ApiError{Code: 13, Msg: "MoneroPay error.", status: 500}
 )
 
 func writeError(w http.ResponseWriter, apiErr *ApiError, err error) {

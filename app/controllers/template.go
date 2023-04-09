@@ -130,3 +130,17 @@ func GetPaymentPage(w http.ResponseWriter, r *http.Request) {
 	p.AmountFloat = walletrpc.XMRToDecimal(p.Amount)
 	t.Execute(w, p)
 }
+
+func MerchantResetTemplate(w http.ResponseWriter, r *http.Request) {
+	_, token, err := jwtauth.FromContext(r.Context())
+	if err != nil {
+		writeError(w, ErrInvalidToken, err)
+		return
+	}
+	accountId := token["id"].(string)
+	if err := os.Remove("./data/merchant_templates/" + accountId);
+	    err != nil && err != os.ErrNotExist {
+                writeError(w, ErrTemplateDelete, err)
+		return
+	}
+}

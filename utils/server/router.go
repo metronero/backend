@@ -39,6 +39,7 @@ func registerRoutes() *chi.Mux {
 			r.Route("/template", func(r chi.Router) {
 				r.Get("/", controllers.MerchantGetTemplate)
 				r.Post("/", controllers.MerchantPostTemplate)
+				r.Post("/reset", controllers.MerchantResetTemplate)
 			})
 		})
 	})

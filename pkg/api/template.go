@@ -43,3 +43,8 @@ func (c *ApiClient) MerchantTemplateUpload(token string, template io.Reader) err
 func (c *ApiClient) MerchantTemplatePreview(token string) ([]byte, error) {
 	return c.backendRequest(token, "GET", "/merchant/template", nil)
 }
+
+func (c *ApiClient) MerchantTemplateReset(token string) error {
+	_, err := c.backendRequest(token, "POST", "/merchant/template/reset", nil)
+	return err
+}
