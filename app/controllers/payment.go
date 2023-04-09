@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/google/uuid"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
+	"github.com/google/uuid"
 
 	"gitlab.com/metronero/backend/app/models"
 	"gitlab.com/metronero/backend/app/queries"
@@ -14,7 +14,7 @@ import (
 )
 
 func AdminGetPayments(w http.ResponseWriter, r *http.Request) {
-	p, err := queries.GetPayments(r.Context())
+	p, err := queries.GetAllPayments(r.Context())
 	if err != nil {
 		writeError(w, ErrDatabase, err)
 		return

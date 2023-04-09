@@ -2,12 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
-	"net/http"
 	"io"
+	"net/http"
 
-	"gitlab.com/moneropay/moneropay/v2/pkg/model"
 	"github.com/go-chi/chi/v5"
 	"github.com/rs/zerolog/log"
+	"gitlab.com/moneropay/moneropay/v2/pkg/model"
 
 	"gitlab.com/metronero/backend/app/queries"
 )

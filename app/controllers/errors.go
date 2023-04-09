@@ -22,8 +22,10 @@ var (
 	ErrUserExists   = &ApiError{Code: 6, Msg: "User already exists.", status: 400}
 	ErrNoId         = &ApiError{Code: 7, Msg: "Unknown resource ID.", status: 400}
 	ErrBadRequest   = &ApiError{Code: 8, Msg: "Invalid request body.", status: 400}
-	ErrDatabase     = &ApiError{Code: 10, Msg: "Database error.", status: 500}
-	ErrMoneropay    = &ApiError{Code: 11, Msg: "MoneroPay error.", status: 500}
+	ErrTemplateSave = &ApiError{Code: 9, Msg: "Failed to save template.", status: 500}
+	ErrTemplateLoad = &ApiError{Code: 10, Msg: "Failed to load template.", status: 500}
+	ErrDatabase     = &ApiError{Code: 11, Msg: "Database error.", status: 500}
+	ErrMoneropay    = &ApiError{Code: 12, Msg: "MoneroPay error.", status: 500}
 )
 
 func writeError(w http.ResponseWriter, apiErr *ApiError, err error) {

@@ -71,7 +71,8 @@ func registerRoutes() *chi.Mux {
 	})
 
 	// For handling MoneroPay callbacks
-	r.Post("/callback/{uuid}", controllers.Callback)
+	r.Post("/callback/{payment_id}", controllers.Callback)
+	r.Get("/p/{payment_id}", controllers.GetPaymentPage)
 
 	return r
 }
