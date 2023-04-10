@@ -35,7 +35,12 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id := chi.URLParam(r, "payment_id")
-	if err := queries.UpdatePayment(r.Context(), id, status, string(b)); err != nil {
+	callbackData := string(b)
+	if err := queries.UpdatePayment(r.Context(), id, status, callbackData); err != nil {
 		log.Error().Err(err).Msg("Failed to update payment status")
+	}
+	if data.Complete {
+		go queries.UpdateBalances(r.Context(), id, data.Amount.Expected)
+		// TODO: go utils.SendCallback(paymentId, callbackUrl, callbackData)
 	}
 }

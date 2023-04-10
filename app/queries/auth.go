@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 
 	"gitlab.com/metronero/backend/app/models"
 	db "gitlab.com/metronero/backend/platform/database"
@@ -24,7 +25,16 @@ func UserLogin(ctx context.Context, username string) (models.Account, error) {
 		return loginData, err
 	}
 
+	go UpdateUserLastLogin(ctx, loginData.AccountId)
+
 	return loginData, nil
+}
+
+func UpdateUserLastLogin(ctx context.Context, id string) {
+	if err := db.Exec(ctx, "UPDATE account_stats SET last_login=$1 WHERE account_id=$2",
+	    time.Now(), id); err != nil {
+		log.Error().Err(err).Msg("Failed to update account last login")
+	}
 }
 
 func UserRegister(ctx context.Context, username, passwordHash string) error {
@@ -54,5 +64,13 @@ func UserRegister(ctx context.Context, username, passwordHash string) error {
 		}
 	}
 
+	go UpdateMerchantCount(ctx)
+
 	return tx.Commit(ctx)
+}
+
+func UpdateMerchantCount(ctx context.Context) {
+	if err := db.Exec(ctx, "UPDATE instance_stats SET total_merchants=total_merchants+1"); err != nil {
+		log.Error().Err(err).Msg("Failed to update merchant count statistic")
+	}
 }
