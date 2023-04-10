@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+
+	"gitlab.com/metronero/backend/app/models"
 )
 
 type ApiClient struct {
@@ -32,11 +34,25 @@ func (c *ApiClient) backendRequest(token, method, endpoint string, body interfac
 		return nil, err
 	}
 
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
+	if token != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", token))
+	}
+
 	res, err := c.Client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return io.ReadAll(res.Body)
+	// There were no API errors
+	byteResp, err := io.ReadAll(res.Body)
+	if res.StatusCode == 200 {
+		return byteResp, err
+	}
+
+	// Parse and return the API error
+	var apiErr models.ApiError
+	if err = json.Unmarshal(byteResp, &apiErr); err != nil {
+		return nil, err
+	}
+	return nil, fmt.Errorf("%s (%d)", apiErr.Msg, apiErr.Code)
 }
