@@ -6,7 +6,9 @@ type Payment struct {
 	InvoiceId    string `json:"invoice_id"`
 	MerchantName string `json:"merchant_name"`
 	Amount       uint64 `json:"amount"`
+	AmountFloat  string
 	Fee          uint64 `json:"fee"`
+	FeeFloat     string
 	// Merchant provided ID for this payment
 	OrderId string `json:"order_id,omitempty"`
 
@@ -21,6 +23,7 @@ type PaymentPageInfo struct {
 	MerchantName string `json:"merchant_name"`
 	TemplateId   string `json:"template_id"`
 	Amount       uint64 `json:"amount"`
+	AmountFloat  string
 
 	// Merchant provided ID for this payment
 	OrderId string `json:"order_id,omitempty"`
@@ -28,7 +31,6 @@ type PaymentPageInfo struct {
 	// Possible statuses: pending, confirming, finished, cancelled, withdrawn
 	Status      string    `json:"status"`
 	LastUpdate  time.Time `json:"last_update"`
-	AmountFloat string    `json:"amount_float"`
 	AcceptUrl   string    `json:"accept_url,omitempty"`
 	CancelUrl   string    `json:"cancel_url,omitempty"`
 	Address     string    `json:"address"`
@@ -43,7 +45,9 @@ type PaymentFull struct {
 	InvoiceId    string `json:"invoice_id"`
 	MerchantName string `json:"merchant_name"`
 	Amount       uint64 `json:"amount"`
+	AmountFloat  string
 	Fee          uint64 `json:"fee"`
+	FeeFloat     string
 
 	// Merchant provided ID for this payment
 	OrderId string `json:"order_id,omitempty"`

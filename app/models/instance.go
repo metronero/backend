@@ -3,6 +3,7 @@ package models
 type Instance struct {
 	Version           string `json:"version,omitempty"`
 	DefaultCommission uint64 `json:"default_commission"`
+	DefaultCommissionFloat string
 
 	// Allow multiple merchants to use this instance and store their funds
 	// in the instance's wallet.
@@ -24,9 +25,11 @@ type InstanceBootstrap struct {
 
 type InstanceStats struct {
 	// Total fees paid by merchants
-	WalletBalance  uint64 `json:"wallet_balance"`
-	TotalProfits   uint64 `json:"total_profits"`
-	TotalMerchants uint64 `json:"total_merchants"`
+	WalletBalance      uint64 `json:"wallet_balance"`
+	WalletBalanceFloat string
+	TotalProfits       uint64 `json:"total_profits"`
+	TotalProfitsFloat  string
+	TotalMerchants     uint64 `json:"total_merchants"`
 }
 
 type InstanceInfo struct {
