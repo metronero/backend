@@ -22,7 +22,12 @@ func CreatePayment(amount uint64, paymentId string) (string, error) {
 	if err := json.NewEncoder(b).Encode(receiveReq); err != nil {
 		return "", err
 	}
-	req, err := http.NewRequest("POST", config.MoneroPay, b)
+
+	endpoint, err := url.JoinPath(config.MoneroPay, "/receive")
+	if err != nil {
+		return "", err
+	}
+	req, err := http.NewRequest("POST", endpoint, b)
 	if err != nil {
 		return "", err
 	}
