@@ -41,25 +41,25 @@ func GetAllPayments(ctx context.Context) ([]models.Payment, error) {
 	return GetPaymentsByAccount(ctx, "")
 }
 
-func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, name string,
+func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, name, address string,
 	req *models.PostPaymentRequest) error {
 	return db.Exec(ctx,
-		"INSERT INTO payments(payment_id,amount,order_id,merchant_name,"+
-			"account_id,accept_url,cancel_url,callback_url,merchant_extra)"+
-			"VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)", paymentId, req.Amount, req.OrderId,
-		name, merchantId, req.AcceptUrl, req.CancelUrl, req.CallbackUrl, req.ExtraData)
+		"INSERT INTO payments(payment_id,amount,order_id,merchant_name,account_id,accept_url,"+
+		"cancel_url,callback_url,merchant_extra,address,fee,last_update)"+
+			"VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)", paymentId, req.Amount, req.OrderId,
+		name, merchantId, req.AcceptUrl, req.CancelUrl, req.CallbackUrl, req.ExtraData, address, 0, time.Now())
 }
 
 func GetPaymentPageInfo(ctx context.Context, id string) (*models.PaymentPageInfo, error) {
 	row, err := db.QueryRow(ctx,
 		"SELECT payment_id,amount,order_id,merchant_name,accept_url,cancel_url,"+
-			"address,merchant_extra FROM payments")
+			"address,merchant_extra,account_id,status FROM payments WHERE payment_id=$1", id)
 	if err != nil {
 		return nil, err
 	}
 	var p models.PaymentPageInfo
 	if err := row.Scan(&p.InvoiceId, &p.Amount, &p.OrderId, &p.MerchantName, &p.AcceptUrl,
-		&p.CancelUrl, &p.Address, &p.ExtraData); err != nil {
+		&p.CancelUrl, &p.Address, &p.ExtraData, &p.TemplateId, &p.Status); err != nil {
 		return nil, err
 	}
 	return &p, nil

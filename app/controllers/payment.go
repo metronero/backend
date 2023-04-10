@@ -67,8 +67,9 @@ func PostMerchantPayment(w http.ResponseWriter, r *http.Request) {
 		writeError(w, ErrMoneropay, nil)
 		return
 	}
-	if err := queries.CreatePaymentRequest(r.Context(), paymentId, merchantId, name, &req); err != nil {
-		writeError(w, ErrDatabase, nil)
+	if err := queries.CreatePaymentRequest(r.Context(), paymentId, merchantId, name,
+	    subaddress, &req); err != nil {
+		writeError(w, ErrDatabase, err)
 		return
 	}
 	res := &models.PostPaymentResponse{PaymentId: paymentId, Address: subaddress}

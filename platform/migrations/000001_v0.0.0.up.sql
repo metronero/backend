@@ -65,17 +65,17 @@ CREATE TABLE IF NOT EXISTS payments (
 	payment_id UUID PRIMARY KEY,
 	amount bigint NOT NULL,
 	fee bigint NOT NULL,
-	order_id text,
-	accept_url text,
-	cancel_url text,
-	callback_url text,
+	order_id text DEFAULT '',
+	accept_url text DEFAULT '',
+	cancel_url text DEFAULT '',
+	callback_url text DEFAULT '',
 	address text NOT NULL,
 	callback_data text,
 	status text NOT NULL DEFAULT 'Pending',
 	last_update timestamp NOT NULL,
 	account_id UUID REFERENCES accounts ON DELETE CASCADE,
 	merchant_name text,
-	merchant_extra text
+	merchant_extra text DEFAULT ''
 );
 
 CREATE TABLE IF NOT EXISTS withdrawals (

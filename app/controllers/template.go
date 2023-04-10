@@ -91,12 +91,6 @@ func MerchantPostTemplate(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetPaymentPage(w http.ResponseWriter, r *http.Request) {
-	_, token, err := jwtauth.FromContext(r.Context())
-	if err != nil {
-		writeError(w, ErrInvalidToken, err)
-		return
-	}
-
 	paymentId := chi.URLParam(r, "payment_id")
 	// Get payment details
 	p, err := queries.GetPaymentPageInfo(r.Context(), paymentId)
@@ -106,9 +100,8 @@ func GetPaymentPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Load template
-	accountId := token["id"].(string)
 	var t *template.Template
-	t, err = template.ParseFiles("./data/merchant_templates/" + accountId)
+	t, err = template.ParseFiles("./data/merchant_templates/" + p.TemplateId)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			t, err = template.ParseFiles("./data/merchant_templates/default")

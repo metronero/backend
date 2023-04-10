@@ -19,6 +19,7 @@ type Payment struct {
 type PaymentPageInfo struct {
 	InvoiceId    string `json:"invoice_id"`
 	MerchantName string `json:"merchant_name"`
+	TemplateId   string `json:"template_id"`
 	Amount       uint64 `json:"amount"`
 
 	// Merchant provided ID for this payment
