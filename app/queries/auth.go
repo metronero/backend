@@ -25,7 +25,7 @@ func UserLogin(ctx context.Context, username string) (models.Account, error) {
 		return loginData, err
 	}
 
-	go UpdateUserLastLogin(ctx, loginData.AccountId)
+	go UpdateUserLastLogin(context.Background(), loginData.AccountId)
 
 	return loginData, nil
 }
@@ -64,7 +64,7 @@ func UserRegister(ctx context.Context, username, passwordHash string) error {
 		}
 	}
 
-	go UpdateMerchantCount(ctx)
+	go UpdateMerchantCount(context.Background())
 
 	return tx.Commit(ctx)
 }

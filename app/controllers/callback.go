@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -28,7 +29,7 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 	var status string
 	if data.Complete {
 		status = "Completed"
-	} else if data.Amount.Expected == data.Amount.Covered.Total {
+	} else if data.Amount.Expected <= data.Amount.Covered.Total {
 		status = "Confirming"
 	} else if data.Amount.Expected > data.Amount.Covered.Total {
 		status = "Partial"
@@ -36,11 +37,12 @@ func Callback(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "payment_id")
 	callbackData := string(b)
-	if err := queries.UpdatePayment(r.Context(), id, status, callbackData); err != nil {
+	// TODO: return the balance from this function to check if overpay occurred
+	if err := queries.UpdatePayment(context.Background(), id, status, callbackData); err != nil {
 		log.Error().Err(err).Msg("Failed to update payment status")
 	}
 	if data.Complete {
-		go queries.UpdateBalances(r.Context(), id, data.Amount.Expected)
+		go queries.UpdateBalances(context.Background(), id, data.Amount.Expected)
 		// TODO: go utils.SendCallback(paymentId, callbackUrl, callbackData)
 	}
 }

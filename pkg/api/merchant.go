@@ -60,3 +60,9 @@ func (c *ApiClient) DeleteMerchantById(token, id string) error {
 	_, err := c.backendRequest(token, "DELETE", "/admin/merchant/"+id, nil)
 	return err
 }
+
+func (c *ApiClient) MerchantWithdrawFunds(token, address string) error {
+	_, err := c.backendRequest(token, "POST", "/merchant/withdrawal",
+	    &models.WithdrawalRequest{Address: address})
+	return err
+}

@@ -1,1 +1,3 @@
 /backend
+data/merchant_templates/*
+!data/merchant_templates/default

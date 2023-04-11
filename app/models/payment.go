@@ -6,9 +6,9 @@ type Payment struct {
 	InvoiceId    string `json:"invoice_id"`
 	MerchantName string `json:"merchant_name"`
 	Amount       uint64 `json:"amount"`
-	AmountFloat  string
+	AmountFloat  string `json:"amount_float,omitempty"`
 	Fee          uint64 `json:"fee"`
-	FeeFloat     string
+	FeeFloat     string `json:"fee_float,omitempty"`
 	// Merchant provided ID for this payment
 	OrderId string `json:"order_id,omitempty"`
 
@@ -23,7 +23,7 @@ type PaymentPageInfo struct {
 	MerchantName string `json:"merchant_name"`
 	TemplateId   string `json:"template_id"`
 	Amount       uint64 `json:"amount"`
-	AmountFloat  string
+	AmountFloat  string `json:"amount_float,omitempty"`
 
 	// Merchant provided ID for this payment
 	OrderId string `json:"order_id,omitempty"`
@@ -45,9 +45,9 @@ type PaymentFull struct {
 	InvoiceId    string `json:"invoice_id"`
 	MerchantName string `json:"merchant_name"`
 	Amount       uint64 `json:"amount"`
-	AmountFloat  string
+	AmountFloat  string `json:"amount_float,omitempty"`
 	Fee          uint64 `json:"fee"`
-	FeeFloat     string
+	FeeFloat     string `json:"fee_float,omitempty"`
 
 	// Merchant provided ID for this payment
 	OrderId string `json:"order_id,omitempty"`
