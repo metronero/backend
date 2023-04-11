@@ -22,14 +22,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	account, err := queries.UserLogin(r.Context(), username)
 	if err := auth.CompareHashAndPassword(account.PasswordHash, password); err != nil {
 		writeError(w, ErrUnauthorized, err)
+		return
 	}
 
 	token, expiry, err := auth.CreateUserToken(username, account.AccountId, 1*time.Hour)
 	if err != nil {
 		writeError(w, ErrTokenIssue, err)
+		return
 	}
-
-	// TODO: spawn goroutine to update last login timestamp here
 
 	json.NewEncoder(w).Encode(&models.ApiTokenInfo{Token: token, ValidUntil: expiry})
 }
@@ -46,6 +46,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	passwordHashBytes, err := auth.HashPassword(password)
 	if err != nil {
 		writeError(w, ErrHash, err)
+		return
 	}
 
 	if err := queries.UserRegister(r.Context(), username, string(passwordHashBytes)); err != nil {
