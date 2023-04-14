@@ -14,7 +14,7 @@ func GetWithdrawalsByAccount(ctx context.Context, id string) ([]models.Withdrawa
 	if id != "" {
 		query = fmt.Sprintf("%s WHERE account_id='%s'", query, id)
 	}
-
+	query += " ORDER BY withdraw_date DESC"
 	var withdrawals []models.Withdrawal
 
 	rows, err := db.Query(ctx, query)

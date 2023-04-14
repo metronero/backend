@@ -13,7 +13,7 @@ import (
 	"gitlab.com/metronero/backend/app/queries"
 )
 
-func Callback(w http.ResponseWriter, r *http.Request) {
+func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
 		// TODO: is this accurate?

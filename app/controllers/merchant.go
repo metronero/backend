@@ -12,7 +12,8 @@ import (
 )
 
 // Recaps relevant activity to be displayed on the merchant dashboard.
-func MerchantInfo(w http.ResponseWriter, r *http.Request) {
+// Returns recent payments and merchant's withdrawable balance, total sales.
+func GetMerchant(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
 		writeError(w, ErrInvalidToken, err)
@@ -27,7 +28,8 @@ func MerchantInfo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(info)
 }
 
-func MerchantUpdate(w http.ResponseWriter, r *http.Request) {
+// Update merchant account settings as a merchant.
+func PostMerchant(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "merchant_id")
 	var settings models.MerchantSettings
 	if err := json.NewDecoder(r.Body).Decode(&settings); err != nil {
@@ -39,7 +41,8 @@ func MerchantUpdate(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func AdminGetMerchantList(w http.ResponseWriter, r *http.Request) {
+// Returns a list of all merchants for the administrator.
+func GetAdminMerchant(w http.ResponseWriter, r *http.Request) {
 	list, err := queries.GetMerchantList(r.Context())
 	if err != nil {
 		writeError(w, ErrDatabase, err)
@@ -48,7 +51,8 @@ func AdminGetMerchantList(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(list)
 }
 
-func AdminGetMerchant(w http.ResponseWriter, r *http.Request) {
+// Return information about a merchant as an administrator.
+func GetAdminMerchantById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "merchant_id")
 	m, err := queries.GetMerchantById(r.Context(), id)
 	if err != nil {
@@ -58,7 +62,8 @@ func AdminGetMerchant(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(m)
 }
 
-func AdminUpdateMerchant(w http.ResponseWriter, r *http.Request) {
+// Update merchant's setting as an administrator.
+func PostAdminMerchantById(w http.ResponseWriter, r *http.Request) {
 	var settings models.MerchantSettings
 	if err := json.NewDecoder(r.Body).Decode(&settings); err != nil {
 		writeError(w, ErrBadRequest, nil)
@@ -69,7 +74,8 @@ func AdminUpdateMerchant(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func AdminDeleteMerchant(w http.ResponseWriter, r *http.Request) {
+// Delete merchant account.
+func DeleteAdminMerchantById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "merchant_id")
 	if err := queries.DeleteMerchantById(r.Context(), id); err != nil {
 		writeError(w, ErrDatabase, err)

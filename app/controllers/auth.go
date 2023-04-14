@@ -10,7 +10,7 @@ import (
 	"gitlab.com/metronero/backend/utils/auth"
 )
 
-func Login(w http.ResponseWriter, r *http.Request) {
+func PostLogin(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
@@ -34,7 +34,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&models.ApiTokenInfo{Token: token, ValidUntil: expiry})
 }
 
-func Register(w http.ResponseWriter, r *http.Request) {
+func PostRegister(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 

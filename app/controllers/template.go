@@ -1,25 +1,22 @@
 package controllers
 
 import (
-	"errors"
 	"encoding/base64"
+	"errors"
 	"html/template"
 	"io"
 	"net/http"
 	"os"
 	"time"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 	qrcode "github.com/skip2/go-qrcode"
-	"gitlab.com/moneropay/go-monero/walletrpc"
 
 	"gitlab.com/metronero/backend/app/models"
-	"gitlab.com/metronero/backend/app/queries"
 )
 
-// For previewing payment page template
-func MerchantGetTemplate(w http.ResponseWriter, r *http.Request) {
+// Get a preview of the payment page template
+func GetMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
 		writeError(w, ErrInvalidToken, err)
@@ -64,7 +61,8 @@ func MerchantGetTemplate(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func MerchantPostTemplate(w http.ResponseWriter, r *http.Request) {
+// Upload new template.
+func PostMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 	// 20 MB max upload size
 	// TODO: make this configurable
 	r.ParseMultipartForm(20 << 20)
@@ -90,50 +88,16 @@ func MerchantPostTemplate(w http.ResponseWriter, r *http.Request) {
 	io.Copy(f, file)
 }
 
-func GetPaymentPage(w http.ResponseWriter, r *http.Request) {
-	paymentId := chi.URLParam(r, "payment_id")
-	// Get payment details
-	p, err := queries.GetPaymentPageInfo(r.Context(), paymentId)
-	if err != nil {
-		writeError(w, ErrDatabase, err)
-		return
-	}
-
-	// Load template
-	var t *template.Template
-	t, err = template.ParseFiles("./data/merchant_templates/" + p.TemplateId)
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			t, err = template.ParseFiles("./data/merchant_templates/default")
-			if err != nil {
-				writeError(w, ErrTemplateLoad, err)
-				return
-			}
-		} else {
-			writeError(w, ErrTemplateLoad, err)
-			return
-		}
-	}
-
-        png, err := qrcode.Encode(p.Address, qrcode.Medium, 256)
-        if err != nil {
-                writeError(w, ErrTemplateLoad, err)
-        }
-	p.Qr = base64.StdEncoding.EncodeToString(png)
-	p.AmountFloat = walletrpc.XMRToDecimal(p.Amount)
-	t.Execute(w, p)
-}
-
-func MerchantResetTemplate(w http.ResponseWriter, r *http.Request) {
+// Reset template back to default. Works by deleting merchant's template file.
+func DeleteMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
 		writeError(w, ErrInvalidToken, err)
 		return
 	}
 	accountId := token["id"].(string)
-	if err := os.Remove("./data/merchant_templates/" + accountId);
-	    err != nil && err != os.ErrNotExist {
-                writeError(w, ErrTemplateDelete, err)
+	if err := os.Remove("./data/merchant_templates/" + accountId); err != nil && err != os.ErrNotExist {
+		writeError(w, ErrTemplateDelete, err)
 		return
 	}
 }

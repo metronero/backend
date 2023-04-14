@@ -18,28 +18,28 @@ func registerRoutes() *chi.Mux {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	r.Post("/login", controllers.Login)
-	r.Post("/register", controllers.Register)
+	r.Post("/login", controllers.PostLogin)
+	r.Post("/register", controllers.PostRegister)
 	// r.Get("/health", controllers.Health)
 
 	r.Route("/merchant", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(jwtauth.Verifier(config.JwtSecret))
 			r.Use(jwtauth.Authenticator)
-			r.Get("/", controllers.MerchantInfo)
-			r.Post("/", controllers.MerchantUpdate)
+			r.Get("/", controllers.GetMerchant)
+			r.Post("/", controllers.PostMerchant)
 			r.Route("/withdrawal", func(r chi.Router) {
-				r.Get("/", controllers.MerchantGetWithdrawals)
-				r.Post("/", controllers.MerchantWithdrawFunds)
+				r.Get("/", controllers.GetMerchantWithdrawal)
+				r.Post("/", controllers.PostMerchantWithdrawal)
 			})
 			r.Route("/payment", func(r chi.Router) {
-				r.Get("/", controllers.MerchantGetPayments)
+				r.Get("/", controllers.GetMerchantPayment)
 				r.Post("/", controllers.PostMerchantPayment)
 			})
 			r.Route("/template", func(r chi.Router) {
-				r.Get("/", controllers.MerchantGetTemplate)
-				r.Post("/", controllers.MerchantPostTemplate)
-				r.Post("/reset", controllers.MerchantResetTemplate)
+				r.Get("/", controllers.GetMerchantTemplate)
+				r.Post("/", controllers.PostMerchantTemplate)
+				r.Delete("/", controllers.DeleteMerchantTemplate)
 			})
 		})
 	})
@@ -49,31 +49,33 @@ func registerRoutes() *chi.Mux {
 			r.Use(jwtauth.Verifier(config.JwtSecret))
 			r.Use(jwtauth.Authenticator)
 			r.Use(middlewareAdminArea)
-			r.Get("/", controllers.AdminInfo)
+			r.Get("/", controllers.GetAdmin)
 			r.Route("/instance", func(r chi.Router) {
-				r.Get("/", controllers.GetInstance)
-				r.Post("/", controllers.EditInstance)
+				r.Get("/", controllers.GetAdminInstance)
+				r.Post("/", controllers.PostAdminInstance)
 			})
 			r.Route("/withdrawal", func(r chi.Router) {
-				r.Get("/", controllers.AdminGetWithdrawals)
-				r.Get("/{merchant_id}", controllers.GetWithdrawalsByMerchant)
+				r.Get("/", controllers.GetAdminWithdrawal)
+				r.Get("/{merchant_id}", controllers.GetAdminWithdrawalById)
 			})
 			r.Route("/payment", func(r chi.Router) {
-				r.Get("/", controllers.AdminGetPayments)
-				r.Get("/{merchant_id}", controllers.GetPaymentsByMerchant)
+				r.Get("/", controllers.GetAdminPayment)
+				r.Get("/{merchant_id}", controllers.GetAdminPaymentById)
 			})
 			r.Route("/merchant", func(r chi.Router) {
-				r.Get("/{merchant_id}", controllers.AdminGetMerchant)
-				r.Post("/{merchant_id}", controllers.AdminUpdateMerchant)
-				r.Delete("/{merchant_id}", controllers.AdminDeleteMerchant)
-				r.Get("/", controllers.AdminGetMerchantList)
+				r.Get("/{merchant_id}", controllers.GetAdminMerchantById)
+				r.Post("/{merchant_id}", controllers.PostAdminMerchantById)
+				r.Delete("/{merchant_id}", controllers.DeleteAdminMerchantById)
+				r.Get("/", controllers.GetAdminMerchant)
 			})
 		})
 	})
 
 	// For handling MoneroPay callbacks
-	r.Post("/callback/{payment_id}", controllers.Callback)
-	r.Get("/p/{payment_id}", controllers.GetPaymentPage)
+	r.Post("/callback/{payment_id}", controllers.CallbackHandler)
+
+	// For handling payment page requests
+	r.Get("/p/{payment_id}", controllers.PaymentPageHandler)
 
 	return r
 }

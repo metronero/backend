@@ -45,6 +45,6 @@ func (c *ApiClient) MerchantTemplatePreview(token string) ([]byte, error) {
 }
 
 func (c *ApiClient) MerchantTemplateReset(token string) error {
-	_, err := c.backendRequest(token, "POST", "/merchant/template/reset", nil)
+	_, err := c.backendRequest(token, "DELETE", "/merchant/template", nil)
 	return err
 }

@@ -9,12 +9,13 @@ import (
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/google/uuid"
 
-	"gitlab.com/metronero/backend/app/queries"
 	"gitlab.com/metronero/backend/app/models"
+	"gitlab.com/metronero/backend/app/queries"
 	"gitlab.com/metronero/backend/utils/moneropay"
 )
 
-func AdminGetWithdrawals(w http.ResponseWriter, r *http.Request) {
+// Returns a list of withdrawals submitted by all merchants.
+func GetAdminWithdrawal(w http.ResponseWriter, r *http.Request) {
 	p, err := queries.GetWithdrawals(r.Context())
 	if err != nil {
 		writeError(w, ErrDatabase, err)
@@ -23,7 +24,35 @@ func AdminGetWithdrawals(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p)
 }
 
-func MerchantWithdrawFunds(w http.ResponseWriter, r *http.Request) {
+// Get list of withdrawals for a merchant account as the administrator.
+func GetAdminWithdrawalById(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "merchant_id")
+	p, err := queries.GetWithdrawalsByAccount(r.Context(), id)
+	if err != nil {
+		writeError(w, ErrDatabase, err)
+		return
+	}
+	json.NewEncoder(w).Encode(p)
+}
+
+// Get withdrawals submitted by the logged in merchant.
+func GetMerchantWithdrawal(w http.ResponseWriter, r *http.Request) {
+	_, token, err := jwtauth.FromContext(r.Context())
+	if err != nil {
+		writeError(w, ErrInvalidToken, err)
+		return
+	}
+	id := token["id"].(string)
+	p, err := queries.GetWithdrawalsByAccount(r.Context(), id)
+	if err != nil {
+		writeError(w, ErrDatabase, err)
+		return
+	}
+	json.NewEncoder(w).Encode(p)
+}
+
+// Submit new withdrawal as a merchant.
+func PostMerchantWithdrawal(w http.ResponseWriter, r *http.Request) {
 	var wr models.WithdrawalRequest
 	if err := json.NewDecoder(r.Body).Decode(&wr); err != nil {
 		writeError(w, ErrBadRequest, err)
@@ -50,11 +79,11 @@ func MerchantWithdrawFunds(w http.ResponseWriter, r *http.Request) {
 	}
 
 	withdrawal := &models.Withdrawal{
-		Id: uuid.New().String(),
+		Id:           uuid.New().String(),
 		MerchantName: name,
-		Amount: amount,
-		Date: time.Now(),
-		AccountId: id,
+		Amount:       amount,
+		Date:         time.Now(),
+		AccountId:    id,
 	}
 
 	if err := queries.SaveWithdrawal(r.Context(), withdrawal); err != nil {
@@ -68,29 +97,4 @@ func MerchantWithdrawFunds(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(withdrawal)
-}
-
-func MerchantGetWithdrawals(w http.ResponseWriter, r *http.Request) {
-	_, token, err := jwtauth.FromContext(r.Context())
-	if err != nil {
-		writeError(w, ErrInvalidToken, err)
-		return
-	}
-	id := token["id"].(string)
-	p, err := queries.GetWithdrawalsByAccount(r.Context(), id)
-	if err != nil {
-		writeError(w, ErrDatabase, err)
-		return
-	}
-	json.NewEncoder(w).Encode(p)
-}
-
-func GetWithdrawalsByMerchant(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "merchant_id")
-	p, err := queries.GetWithdrawalsByAccount(r.Context(), id)
-	if err != nil {
-		writeError(w, ErrDatabase, err)
-		return
-	}
-	json.NewEncoder(w).Encode(p)
 }

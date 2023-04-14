@@ -1,19 +1,26 @@
 package controllers
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"errors"
+	"html/template"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/google/uuid"
+	qrcode "github.com/skip2/go-qrcode"
+	"gitlab.com/moneropay/go-monero/walletrpc"
 
 	"gitlab.com/metronero/backend/app/models"
 	"gitlab.com/metronero/backend/app/queries"
 	"gitlab.com/metronero/backend/utils/moneropay"
 )
 
-func AdminGetPayments(w http.ResponseWriter, r *http.Request) {
+// Return all payments submitted by all merchants.
+func GetAdminPayment(w http.ResponseWriter, r *http.Request) {
 	p, err := queries.GetAllPayments(r.Context())
 	if err != nil {
 		writeError(w, ErrDatabase, err)
@@ -22,7 +29,19 @@ func AdminGetPayments(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p)
 }
 
-func MerchantGetPayments(w http.ResponseWriter, r *http.Request) {
+// Return all payments associated with the merchant ID.
+func GetAdminPaymentById(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "merchant_id")
+	p, err := queries.GetPaymentsByAccount(r.Context(), id)
+	if err != nil {
+		writeError(w, ErrDatabase, err)
+		return
+	}
+	json.NewEncoder(w).Encode(p)
+}
+
+// Get payments belonging to the logged in merchant.
+func GetMerchantPayment(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
 		writeError(w, ErrInvalidToken, err)
@@ -37,17 +56,7 @@ func MerchantGetPayments(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p)
 }
 
-func GetPaymentsByMerchant(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "merchant_id")
-	p, err := queries.GetPaymentsByAccount(r.Context(), id)
-	if err != nil {
-		writeError(w, ErrDatabase, err)
-		return
-	}
-	json.NewEncoder(w).Encode(p)
-}
-
-// Create a new payment request
+// Create a new payment request.
 func PostMerchantPayment(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
@@ -68,10 +77,45 @@ func PostMerchantPayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := queries.CreatePaymentRequest(r.Context(), paymentId, merchantId, name,
-	    subaddress, &req); err != nil {
+		subaddress, &req); err != nil {
 		writeError(w, ErrDatabase, err)
 		return
 	}
 	res := &models.PostPaymentResponse{PaymentId: paymentId, Address: subaddress}
 	json.NewEncoder(w).Encode(res)
+}
+
+// Load merchant template, payment details and serve payment page.
+func PaymentPageHandler(w http.ResponseWriter, r *http.Request) {
+	paymentId := chi.URLParam(r, "payment_id")
+	// Get payment details
+	p, err := queries.GetPaymentPageInfo(r.Context(), paymentId)
+	if err != nil {
+		writeError(w, ErrDatabase, err)
+		return
+	}
+
+	// Load template
+	var t *template.Template
+	t, err = template.ParseFiles("./data/merchant_templates/" + p.TemplateId)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			t, err = template.ParseFiles("./data/merchant_templates/default")
+			if err != nil {
+				writeError(w, ErrTemplateLoad, err)
+				return
+			}
+		} else {
+			writeError(w, ErrTemplateLoad, err)
+			return
+		}
+	}
+
+	png, err := qrcode.Encode(p.Address, qrcode.Medium, 256)
+	if err != nil {
+		writeError(w, ErrTemplateLoad, err)
+	}
+	p.Qr = base64.StdEncoding.EncodeToString(png)
+	p.AmountFloat = walletrpc.XMRToDecimal(p.Amount)
+	t.Execute(w, p)
 }

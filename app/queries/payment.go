@@ -15,6 +15,7 @@ func GetPaymentsByAccount(ctx context.Context, id string) ([]models.Payment, err
 	if id != "" {
 		query = fmt.Sprintf("%s WHERE account_id='%s'", query, id)
 	}
+	query += " ORDER BY last_update DESC"
 
 	var payments []models.Payment
 
