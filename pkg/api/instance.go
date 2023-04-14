@@ -3,10 +3,10 @@ package api
 import (
 	"encoding/json"
 
-	"gitlab.com/metronero/backend/app/models"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
-func (c *ApiClient) GetInstanceInfo(token string) (*models.InstanceInfo, error) {
+func (c *ApiClient) GetAdminInstance(token string) (*models.InstanceInfo, error) {
 	resp, err := c.backendRequest(token, "GET", "/admin/instance", nil)
 	if err != nil {
 		return nil, err
@@ -16,7 +16,7 @@ func (c *ApiClient) GetInstanceInfo(token string) (*models.InstanceInfo, error) 
 	return &i, err
 }
 
-func (c *ApiClient) UpdateInstance(token string, conf *models.Instance) error {
+func (c *ApiClient) PostAdminInstance(token string, conf *models.Instance) error {
 	_, err := c.backendRequest(token, "POST", "/admin/instance", conf)
 	return err
 }

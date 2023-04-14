@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"gitlab.com/metronero/backend/app/models"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 type ApiClient struct {

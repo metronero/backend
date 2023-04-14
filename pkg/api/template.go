@@ -1,19 +1,23 @@
 package api
 
 import (
-	"io"
-        "net/url"
-	"net/http"
-	"mime/multipart"
 	"bytes"
 	"fmt"
+	"io"
+	"mime/multipart"
+	"net/http"
+	"net/url"
 )
 
-func (c *ApiClient) MerchantTemplateUpload(token string, template io.Reader) error {
+func (c *ApiClient) GetMerchantTemplate(token string) ([]byte, error) {
+	return c.backendRequest(token, "GET", "/merchant/template", nil)
+}
+
+func (c *ApiClient) PostMerchantTemplate(token string, template io.Reader) error {
 	var (
-		b bytes.Buffer
+		b   bytes.Buffer
 		err error
-		fw io.Writer
+		fw  io.Writer
 	)
 	w := multipart.NewWriter(&b)
 	if fw, err = w.CreateFormFile("file", "template"); err != nil {
@@ -24,10 +28,10 @@ func (c *ApiClient) MerchantTemplateUpload(token string, template io.Reader) err
 	}
 	w.Close()
 
-        endpoint, err := url.JoinPath(c.BaseUrl, "/merchant/template")
-        if err != nil {
-                return err
-        }
+	endpoint, err := url.JoinPath(c.BaseUrl, "/merchant/template")
+	if err != nil {
+		return err
+	}
 
 	req, err := http.NewRequest("POST", endpoint, &b)
 	if err != nil {
@@ -40,11 +44,7 @@ func (c *ApiClient) MerchantTemplateUpload(token string, template io.Reader) err
 	return err
 }
 
-func (c *ApiClient) MerchantTemplatePreview(token string) ([]byte, error) {
-	return c.backendRequest(token, "GET", "/merchant/template", nil)
-}
-
-func (c *ApiClient) MerchantTemplateReset(token string) error {
+func (c *ApiClient) DeleteMerchantTemplate(token string) error {
 	_, err := c.backendRequest(token, "DELETE", "/merchant/template", nil)
 	return err
 }

@@ -7,15 +7,16 @@ import (
 	"net/http"
 	"net/url"
 
-	"gitlab.com/metronero/backend/app/models"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 var (
-	ErrUnauthorized = errors.New("Username or password is wrong.")
+	ErrExUnauthorized = errors.New("Username or password is wrong.")
 	ErrRegisterFail = errors.New("Failed to register new user.")
 )
 
-func (c *ApiClient) UserLogin(username, password string) (*models.ApiTokenInfo, error) {
+// TODO: redo these endpoints to avoid form data, send json
+func (c *ApiClient) PostLogin(username, password string) (*models.ApiTokenInfo, error) {
 	endpoint, err := url.JoinPath(c.BaseUrl, "/login")
 	if err != nil {
 		return nil, err
@@ -30,7 +31,7 @@ func (c *ApiClient) UserLogin(username, password string) (*models.ApiTokenInfo, 
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, ErrUnauthorized
+		return nil, ErrExUnauthorized
 	}
 
 	b, err := io.ReadAll(resp.Body)
@@ -43,7 +44,7 @@ func (c *ApiClient) UserLogin(username, password string) (*models.ApiTokenInfo, 
 	return &token, err
 }
 
-func (c *ApiClient) UserRegister(username, password string) error {
+func (c *ApiClient) PostRegister(username, password string) error {
 	endpoint, err := url.JoinPath(c.BaseUrl, "/register")
 	if err != nil {
 		return err
