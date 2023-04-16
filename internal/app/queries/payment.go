@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab.com/metronero/backend/pkg/models"
 	db "gitlab.com/metronero/backend/internal/platform/database"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 func GetPaymentsByAccount(ctx context.Context, id string) ([]models.Payment, error) {
@@ -46,7 +46,7 @@ func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, name, addr
 	req *models.PostPaymentRequest) error {
 	return db.Exec(ctx,
 		"INSERT INTO payments(payment_id,amount,order_id,merchant_name,account_id,accept_url,"+
-		"cancel_url,callback_url,merchant_extra,address,fee,last_update)"+
+			"cancel_url,callback_url,merchant_extra,address,fee,last_update)"+
 			"VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)", paymentId, req.Amount, req.OrderId,
 		name, merchantId, req.AcceptUrl, req.CancelUrl, req.CallbackUrl, req.ExtraData, address, 0, time.Now())
 }

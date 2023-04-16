@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"gitlab.com/metronero/backend/pkg/models"
 	db "gitlab.com/metronero/backend/internal/platform/database"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 func GetMerchantInfo(ctx context.Context, id string) (*models.MerchantDashboardInfo, error) {

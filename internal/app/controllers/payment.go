@@ -14,10 +14,10 @@ import (
 	qrcode "github.com/skip2/go-qrcode"
 	"gitlab.com/moneropay/go-monero/walletrpc"
 
-	"gitlab.com/metronero/backend/pkg/models"
-	"gitlab.com/metronero/backend/pkg/api"
 	"gitlab.com/metronero/backend/internal/app/queries"
 	"gitlab.com/metronero/backend/internal/utils/moneropay"
+	"gitlab.com/metronero/backend/pkg/api"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 // Return all payments submitted by all merchants.

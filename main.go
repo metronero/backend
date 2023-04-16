@@ -8,7 +8,6 @@ import (
 
 func main() {
 	config.Load()
-	database.Migrate()
 	database.Init()
 	server.StartWithGracefulShutdown()
 }

@@ -3,8 +3,8 @@ package queries
 import (
 	"context"
 
-	"gitlab.com/metronero/backend/pkg/models"
 	db "gitlab.com/metronero/backend/internal/platform/database"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 func InstanceInfo(ctx context.Context) (*models.InstanceInfo, error) {

@@ -3,19 +3,19 @@ package moneropay
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
-	"fmt"
 
-	"gitlab.com/moneropay/moneropay/v2/pkg/model"
 	"gitlab.com/moneropay/go-monero/walletrpc"
+	"gitlab.com/moneropay/moneropay/v2/pkg/model"
 
 	"gitlab.com/metronero/backend/internal/utils/config"
 )
 
 func CreatePayment(amount uint64, paymentId string) (string, error) {
-	cUrl, err :=  url.JoinPath(config.CallbackAddr, "callback", paymentId)
+	cUrl, err := url.JoinPath(config.CallbackAddr, "callback", paymentId)
 	if err != nil {
 		return "", err
 	}

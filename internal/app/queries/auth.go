@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 
-	"gitlab.com/metronero/backend/pkg/models"
 	db "gitlab.com/metronero/backend/internal/platform/database"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 // Given an username, returns password hash
@@ -32,7 +32,7 @@ func UserLogin(ctx context.Context, username string) (models.Account, error) {
 
 func UpdateUserLastLogin(ctx context.Context, id string) {
 	if err := db.Exec(ctx, "UPDATE account_stats SET last_login=$1 WHERE account_id=$2",
-	    time.Now(), id); err != nil {
+		time.Now(), id); err != nil {
 		log.Error().Err(err).Msg("Failed to update account last login")
 	}
 }

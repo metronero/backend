@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"gitlab.com/metronero/backend/pkg/models"
 	db "gitlab.com/metronero/backend/internal/platform/database"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 func GetWithdrawalsByAccount(ctx context.Context, id string) ([]models.Withdrawal, error) {
@@ -45,18 +45,17 @@ func SaveWithdrawal(ctx context.Context, w *models.Withdrawal) error {
 	}
 	defer tx.Rollback(ctx)
 	if _, err := tx.Exec(ctx,
-	    "INSERT INTO withdrawals(withdrawal_id,amount,withdraw_date,account_id,merchant_name)"+
-	    "VALUES($1,$2,$3,$4,$5)", w.Id, w.Amount, w.Date, w.AccountId, w.MerchantName);
-	    err != nil {
+		"INSERT INTO withdrawals(withdrawal_id,amount,withdraw_date,account_id,merchant_name)"+
+			"VALUES($1,$2,$3,$4,$5)", w.Id, w.Amount, w.Date, w.AccountId, w.MerchantName); err != nil {
 		return err
 	}
 	if _, err := tx.Exec(ctx,
-	    "UPDATE merchant_stats SET balance=balance-$1 WHERE account_id=$2",
-	    w.Amount, w.AccountId); err != nil {
+		"UPDATE merchant_stats SET balance=balance-$1 WHERE account_id=$2",
+		w.Amount, w.AccountId); err != nil {
 		return err
 	}
 	if _, err := tx.Exec(ctx, "UPDATE instance_stats SET wallet_balance=wallet_balance-$1",
-	    w.Amount); err != nil {
+		w.Amount); err != nil {
 		return err
 	}
 	return tx.Commit(ctx)

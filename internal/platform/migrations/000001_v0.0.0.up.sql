@@ -8,10 +8,6 @@ CREATE TABLE IF NOT EXISTS instance (
 	withdrawal_times text DEFAULT 'instant'
 );
 
-CREATE TABLE IF NOT EXISTS instance_bootstrap (
-	first_run bool DEFAULT false NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS instance_stats (
 	wallet_balance bigint DEFAULT 0 NOT NULL,
 	total_profits bigint DEFAULT 0 NOT NULL,
@@ -54,11 +50,6 @@ CREATE TABLE IF NOT EXISTS callback_secrets (
 	account_id UUID PRIMARY KEY REFERENCES accounts ON DELETE CASCADE,
 	secret_key text NOT NULL,
 	valid_until timestamp NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS templates (
-	template_id SERIAL PRIMARY KEY,
-	account_id UUID REFERENCES accounts ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS payments (

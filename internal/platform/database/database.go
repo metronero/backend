@@ -5,9 +5,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 
@@ -17,23 +14,12 @@ import (
 var Db *pgxpool.Pool
 
 func Init() {
+	applyMigrations()
 	var err error
 	if Db, err = pgxpool.Connect(context.Background(), config.PostgresUri); err != nil {
 		log.Fatal("Failed to connect to database: ", err)
 	}
-}
-
-func Migrate() {
-	m, err := migrate.New("file://internal/platform/migrations", config.PostgresUri)
-	if err != nil {
-		log.Fatal("Failed to begin migration: ", err)
-	}
-	if err := m.Up(); err != nil {
-		if err == migrate.ErrNoChange {
-			return
-		}
-		log.Fatal("Failed to migrate: ", err)
-	}
+	bootstrap()
 }
 
 func QueryRow(ctx context.Context, query string, args ...interface{}) (pgx.Row, error) {

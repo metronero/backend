@@ -1,6 +1,8 @@
 package config
 
 import (
+	"html/template"
+	"net/url"
 	"os"
 	"time"
 
@@ -10,13 +12,18 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+const Version = "0.0.0"
+
 var (
-	BindAddr     string
-	CallbackAddr string
-	PostgresUri  string
-	JwtSecret    *jwtauth.JWTAuth
-	CallbackUrl  string
-	MoneroPay    string
+	BindAddr               string
+	CallbackAddr           string
+	PostgresUri            string
+	JwtSecret              *jwtauth.JWTAuth
+	CallbackUrl            string
+	MoneroPay              string
+	TemplateDir            string
+	TemplateMaxSize        int
+	DefaultPaymentTemplate *template.Template
 )
 
 func Load() {
@@ -32,11 +39,21 @@ func Load() {
 	flag.StringVar(&MoneroPay, "moneropay", "http://localhost:5000", "MoneroPay instance")
 	var logFormat string
 	flag.StringVar(&logFormat, "log-format", "pretty", "Log format (pretty or json)")
+	flag.StringVar(&TemplateDir, "template-dir", "./data/merchant_templates", "Directory to save merchant templates.")
+	flag.IntVar(&TemplateMaxSize, "template-max-size", 20, "Maximum template upload size in MiB")
 	flag.Parse()
 
 	JwtSecret = jwtauth.New("HS256", []byte(jwtSecretStr), nil)
 	if logFormat == "pretty" {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr,
 			TimeFormat: time.RFC3339})
+	}
+
+	templatePath, err := url.JoinPath(TemplateDir, "default")
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to load default payment template")
+	}
+	if DefaultPaymentTemplate, err = template.ParseFiles(templatePath); err != nil {
+		log.Fatal().Err(err).Msg("Failed to load default payment template")
 	}
 }

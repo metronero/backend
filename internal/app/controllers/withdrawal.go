@@ -9,10 +9,10 @@ import (
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/google/uuid"
 
-	"gitlab.com/metronero/backend/pkg/models"
-	"gitlab.com/metronero/backend/pkg/api"
 	"gitlab.com/metronero/backend/internal/app/queries"
 	"gitlab.com/metronero/backend/internal/utils/moneropay"
+	"gitlab.com/metronero/backend/pkg/api"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 // Returns a list of withdrawals submitted by all merchants.

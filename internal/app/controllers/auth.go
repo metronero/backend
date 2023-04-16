@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"time"
 
-	"gitlab.com/metronero/backend/pkg/models"
-	"gitlab.com/metronero/backend/pkg/api"
 	"gitlab.com/metronero/backend/internal/app/queries"
 	"gitlab.com/metronero/backend/internal/utils/auth"
+	"gitlab.com/metronero/backend/pkg/api"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 func PostLogin(w http.ResponseWriter, r *http.Request) {

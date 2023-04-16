@@ -7,9 +7,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 
-	"gitlab.com/metronero/backend/pkg/models"
-	"gitlab.com/metronero/backend/pkg/api"
 	"gitlab.com/metronero/backend/internal/app/queries"
+	"gitlab.com/metronero/backend/pkg/api"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 // Recaps relevant activity to be displayed on the merchant dashboard.
