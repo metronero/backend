@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-chi/jwtauth/v5"
+
 	"gitlab.com/metronero/backend/internal/app/queries"
 	"gitlab.com/metronero/backend/internal/utils/auth"
 	"gitlab.com/metronero/backend/pkg/api"
@@ -51,6 +53,16 @@ func PostRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := queries.UserRegister(r.Context(), username, string(passwordHashBytes)); err != nil {
+		writeError(w, api.ErrDatabase, err)
+		return
+	}
+}
+
+// Invalidates bearer token of the user. Stores it in invalid_tokens table in
+// database until expiry of the token.
+func PostLogout(w http.ResponseWriter, r *http.Request) {
+	token := jwtauth.TokenFromHeader(r)
+	if err := queries.InvalidateToken(r.Context(), token); err != nil {
 		writeError(w, api.ErrDatabase, err)
 		return
 	}

@@ -40,10 +40,8 @@ CREATE TABLE IF NOT EXISTS merchant_stats (
 	total_sales bigint NOT NULL DEFAULT 0
 );
 
-CREATE TABLE IF NOT EXISTS api_tokens (
-	account_id UUID PRIMARY KEY REFERENCES accounts ON DELETE CASCADE,
-	token text NOT NULL,
-	valid_until timestamp NOT NULL
+CREATE TABLE IF NOT EXISTS invalid_tokens (
+	token text PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS callback_secrets (

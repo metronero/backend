@@ -20,6 +20,13 @@ func registerRoutes() *chi.Mux {
 
 	r.Post("/login", controllers.PostLogin)
 	r.Post("/register", controllers.PostRegister)
+
+	r.Group(func(r chi.Router) {
+		r.Use(jwtauth.Verifier(config.JwtSecret))
+		r.Use(jwtauth.Authenticator)
+		r.Post("/logout", controllers.PostLogout)
+	})
+
 	// r.Get("/health", controllers.Health)
 
 	r.Route("/merchant", func(r chi.Router) {

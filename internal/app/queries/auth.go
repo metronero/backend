@@ -74,3 +74,7 @@ func UpdateMerchantCount(ctx context.Context) {
 		log.Error().Err(err).Msg("Failed to update merchant count statistic")
 	}
 }
+
+func InvalidateToken(ctx context.Context, token string) error {
+	return db.Exec(ctx, "INSERT INTO invalid_tokens (token) VALUES ($1)", token)
+}
