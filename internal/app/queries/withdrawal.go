@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	db "gitlab.com/metronero/backend/internal/platform/database"
-	"gitlab.com/metronero/backend/pkg/models"
+	"gitlab.com/metronero/metronero-go/models"
 )
 
 func GetWithdrawalsByAccount(ctx context.Context, id string) ([]models.Withdrawal, error) {

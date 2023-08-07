@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	db "gitlab.com/metronero/backend/internal/platform/database"
-	"gitlab.com/metronero/backend/pkg/models"
+	"gitlab.com/metronero/metronero-go/models"
 )
 
 func GetMerchantInfo(ctx context.Context, id string) (*models.MerchantDashboardInfo, error) {

@@ -12,8 +12,8 @@ import (
 	"github.com/go-chi/jwtauth/v5"
 
 	"gitlab.com/metronero/backend/internal/utils/config"
-	"gitlab.com/metronero/backend/pkg/api"
-	"gitlab.com/metronero/backend/pkg/models"
+	"gitlab.com/metronero/metronero-go/api"
+	"gitlab.com/metronero/metronero-go/models"
 )
 
 // Get a preview of the payment page template

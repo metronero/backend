@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	db "gitlab.com/metronero/backend/internal/platform/database"
-	"gitlab.com/metronero/backend/pkg/models"
+	"gitlab.com/metronero/metronero-go/models"
 )
 
 // Given an username, returns password hash

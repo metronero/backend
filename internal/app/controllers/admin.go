@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"gitlab.com/metronero/backend/internal/app/queries"
-	"gitlab.com/metronero/backend/pkg/api"
+	"gitlab.com/metronero/metronero-go/api"
 )
 
 // Recaps relevant activity to be displayed on the admin dashboard.

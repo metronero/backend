@@ -1132,6 +1132,8 @@ github.com/yvasiyarov/go-metrics v0.0.0-20140926110328-57bccd1ccd43/go.mod h1:aX
 github.com/yvasiyarov/gorelic v0.0.0-20141212073537-a9bba5b9ab50/go.mod h1:NUSPSUX/bi6SeDMUh6brw0nXpxHnc96TguQh0+r/ssA=
 github.com/yvasiyarov/newrelic_platform_go v0.0.0-20140908184405-b21fdbd4370f/go.mod h1:GlGEuHIJweS1mbCqG+7vt2nvWLzLLnRHbXz5JKd/Qbg=
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=
+gitlab.com/metronero/metronero-go v0.0.0-20230807194828-e271ebf66708 h1:ldLvTHdfP6z5oa/wwF13iqrHWU02Msvk7MwQIWwRmqI=
+gitlab.com/metronero/metronero-go v0.0.0-20230807194828-e271ebf66708/go.mod h1:Oe9MTpLT8tX1LRsiDF5RbOqoB8l0/J37BYNggl98AHE=
 gitlab.com/moneropay/go-monero v1.1.0 h1:30pfEUORwjEyRR20jEQ2zZguud08vvxBijlaHJwUNc0=
 gitlab.com/moneropay/go-monero v1.1.0/go.mod h1:k7fElrhjex1ktCy45ebcgz66oGBeOtciBZA405s3Oz0=
 gitlab.com/moneropay/moneropay/v2 v2.2.2 h1:H8OZFDCakJsgCF3YDEhuBD05jeL0Jn9cGEKnoVGc9oE=

@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"gitlab.com/metronero/backend/internal/app/queries"
-	"gitlab.com/metronero/backend/pkg/api"
-	"gitlab.com/metronero/backend/pkg/models"
+	"gitlab.com/metronero/metronero-go/api"
+	"gitlab.com/metronero/metronero-go/models"
 )
 
 func GetAdminInstance(w http.ResponseWriter, r *http.Request) {

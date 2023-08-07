@@ -6,7 +6,7 @@ import (
 	"time"
 
 	db "gitlab.com/metronero/backend/internal/platform/database"
-	"gitlab.com/metronero/backend/pkg/models"
+	"gitlab.com/metronero/metronero-go/models"
 )
 
 func GetPaymentsByAccount(ctx context.Context, id string) ([]models.Payment, error) {

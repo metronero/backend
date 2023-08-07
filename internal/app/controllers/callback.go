@@ -11,7 +11,7 @@ import (
 	"gitlab.com/moneropay/moneropay/v2/pkg/model"
 
 	"gitlab.com/metronero/backend/internal/app/queries"
-	"gitlab.com/metronero/backend/pkg/api"
+	"gitlab.com/metronero/metronero-go/api"
 )
 
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
