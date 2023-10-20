@@ -19,7 +19,6 @@ func registerRoutes() *chi.Mux {
 	r.Use(middleware.Recoverer)
 
 	r.Post("/login", controllers.PostLogin)
-	r.Post("/register", controllers.PostRegister)
 
 	r.Group(func(r chi.Router) {
 		r.Use(jwtauth.Verifier(config.JwtSecret))
@@ -57,6 +56,7 @@ func registerRoutes() *chi.Mux {
 			r.Use(jwtauth.Authenticator)
 			r.Use(middlewareAdminArea)
 			r.Get("/", controllers.GetAdmin)
+			r.Post("/register", controllers.PostRegister)
 			r.Route("/instance", func(r chi.Router) {
 				r.Get("/", controllers.GetAdminInstance)
 				r.Post("/", controllers.PostAdminInstance)

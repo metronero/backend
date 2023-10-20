@@ -64,15 +64,7 @@ func UserRegister(ctx context.Context, username, passwordHash string) error {
 		}
 	}
 
-	go UpdateMerchantCount(context.Background())
-
 	return tx.Commit(ctx)
-}
-
-func UpdateMerchantCount(ctx context.Context) {
-	if err := db.Exec(ctx, "UPDATE instance_stats SET total_merchants=total_merchants+1"); err != nil {
-		log.Error().Err(err).Msg("Failed to update merchant count statistic")
-	}
 }
 
 func InvalidateToken(ctx context.Context, token string) error {

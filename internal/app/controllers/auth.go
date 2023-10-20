@@ -37,6 +37,7 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(&models.ApiTokenInfo{Token: token, ValidUntil: expiry})
 }
 
+// Only the instance admin can register new users
 func PostRegister(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")

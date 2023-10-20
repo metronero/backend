@@ -24,12 +24,8 @@ func GetAdminInfo(ctx context.Context) (*models.AdminDashboardInfo, error) {
 
 func AdminEditMerchant(ctx context.Context, conf *models.MerchantSettings) error {
 	query := "UPDATE merchants SET"
-	if conf.CommissionRate != nil && conf.Disabled != nil {
-		query = fmt.Sprintf("%s commission=%d,disabled=%t", query,
-			*conf.CommissionRate, *conf.Disabled)
-	} else if conf.CommissionRate != nil {
-		query = fmt.Sprintf("%s commission=%d", query, *conf.CommissionRate)
-	} else if conf.Disabled != nil {
+	// TODO: support password changes here.
+	if conf.Disabled != nil {
 		query = fmt.Sprintf("%s disabled=%t", query, *conf.Disabled)
 	}
 	query += " WHERE account_id=$1"
