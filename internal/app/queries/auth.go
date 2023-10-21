@@ -15,7 +15,7 @@ import (
 func UserLogin(ctx context.Context, username string) (models.Account, error) {
 	var loginData models.Account
 
-	row, err := db.QueryRow(ctx, "SELECT account_id, password_hash FROM accounts WHERE username=$1",
+	row, err := db.QueryRow(ctx, "SELECT account_id, password FROM accounts WHERE username=$1",
 		username)
 	if err != nil {
 		return loginData, err
@@ -46,7 +46,7 @@ func UserRegister(ctx context.Context, username, passwordHash string) error {
 	}
 	defer tx.Rollback(ctx)
 
-	if _, err := tx.Exec(ctx, "INSERT INTO accounts (account_id, username, password_hash)"+
+	if _, err := tx.Exec(ctx, "INSERT INTO accounts (account_id, username, password)"+
 		"VALUES ($1, $2, $3)", id, username, passwordHash); err != nil {
 		return err
 	}
