@@ -8,8 +8,10 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jackc/pgx/v4"
 	"github.com/rs/zerolog/log"
+	"github.com/google/uuid"
 
 	"gitlab.com/metronero/backend/internal/utils/config"
+	"gitlab.com/metronero/backend/internal/utils/auth"
 )
 
 func applyMigrations() {
@@ -43,7 +45,7 @@ func bootstrap() {
 	log.Info().Msg("Bootstrapping instance for the first time")
 	tx, err := Db.Begin(ctx)
 	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to bootstrap")
+		log.Fatal().Err(err).Msg("Failed to start database transaction")
 	}
 	defer tx.Rollback(ctx)
 	if _, err := tx.Exec(ctx, "INSERT INTO instance (version) VALUES ($1)",
@@ -54,7 +56,23 @@ func bootstrap() {
 	if _, err := tx.Exec(ctx, "INSERT INTO instance_stats DEFAULT VALUES"); err != nil {
 		log.Fatal().Err(err).Msg("Failed to bootstrap instance_stats table")
 	}
+	// Create admin user and generate a password.
+	password, err := auth.GeneratePassword()
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to generate password for the admin user.")
+	}
+	hashBytes, err := auth.HashPassword(password)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to hash password for the admin user.")
+	}
+	if _, err := tx.Exec(ctx,
+		"INSERT INTO accounts (account_id, username, password, role) VALUES ($1, 'admin', $2, 'admin')",
+		uuid.New().String(), hashBytes);
+		err != nil {
+		log.Fatal().Err(err).Msg("Failed to bootstrap")
+	}
 	if err := tx.Commit(ctx); err != nil {
 		log.Fatal().Err(err).Msg("Failed to bootstrap")
 	}
+	log.Info().Str("username", "admin").Str("password", password).Msg("Created admin user")
 }
