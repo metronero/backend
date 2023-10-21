@@ -34,10 +34,6 @@ func registerRoutes() *chi.Mux {
 			r.Use(jwtauth.Authenticator)
 			r.Get("/", controllers.GetMerchant)
 			r.Post("/", controllers.PostMerchant)
-			r.Route("/withdrawal", func(r chi.Router) {
-				r.Get("/", controllers.GetMerchantWithdrawal)
-				r.Post("/", controllers.PostMerchantWithdrawal)
-			})
 			r.Route("/payment", func(r chi.Router) {
 				r.Get("/", controllers.GetMerchantPayment)
 				r.Post("/", controllers.PostMerchantPayment)
@@ -63,7 +59,6 @@ func registerRoutes() *chi.Mux {
 			})
 			r.Route("/withdrawal", func(r chi.Router) {
 				r.Get("/", controllers.GetAdminWithdrawal)
-				r.Get("/{merchant_id}", controllers.GetAdminWithdrawalById)
 			})
 			r.Route("/payment", func(r chi.Router) {
 				r.Get("/", controllers.GetAdminPayment)

@@ -42,9 +42,17 @@ func PostRegister(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	if username == "" || password == "" {
+	if username == "" {
 		writeError(w, api.ErrRequired, nil)
 		return
+	}
+
+	var err error
+	if password == "" {
+		password, err = auth.GeneratePassword()
+		if err != nil {
+			writeError(w, api.ErrPassGen, err)
+		}
 	}
 
 	passwordHashBytes, err := auth.HashPassword(password)
@@ -57,6 +65,8 @@ func PostRegister(w http.ResponseWriter, r *http.Request) {
 		writeError(w, api.ErrDatabase, err)
 		return
 	}
+
+	json.NewEncoder(w).Encode(&models.RegisteredUserInfo{Username: username, Password: password})
 }
 
 // Invalidates bearer token of the user. Stores it in invalid_tokens table in
