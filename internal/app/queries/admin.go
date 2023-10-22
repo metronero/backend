@@ -16,7 +16,7 @@ func GetAdminInfo(ctx context.Context) (*models.AdminDashboardInfo, error) {
 	if a.Stats, err = InstanceStats(ctx); err != nil {
 		return nil, err
 	}
-	if a.RecentWithdrawals, err = GetWithdrawals(ctx); err != nil {
+	if a.RecentPayments, err = GetAllPayments(ctx); err != nil {
 		return nil, err
 	}
 	return &a, nil

@@ -14,6 +14,7 @@ import (
 )
 
 func PostLogin(w http.ResponseWriter, r *http.Request) {
+	// TODO: instead of form values use json data
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
@@ -39,34 +40,29 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 
 // Only the instance admin can register new users
 func PostRegister(w http.ResponseWriter, r *http.Request) {
-	username := r.FormValue("username")
-	password := r.FormValue("password")
+	var creds models.NewAccount
+	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
+		writeError(w, api.ErrBadRequest, err)
+		return
+	}
 
-	if username == "" {
+	if creds.Username == "" || creds.Password == "" || creds.Role == "" {
 		writeError(w, api.ErrRequired, nil)
 		return
 	}
 
-	var err error
-	if password == "" {
-		password, err = auth.GeneratePassword()
-		if err != nil {
-			writeError(w, api.ErrPassGen, err)
-		}
-	}
-
-	passwordHashBytes, err := auth.HashPassword(password)
+	passwordHashBytes, err := auth.HashPassword(creds.Password)
 	if err != nil {
 		writeError(w, api.ErrHash, err)
 		return
 	}
 
-	if err := queries.UserRegister(r.Context(), username, string(passwordHashBytes)); err != nil {
+	if err := queries.UserRegister(r.Context(), creds.Username,
+		string(passwordHashBytes), creds.Role); err != nil {
 		writeError(w, api.ErrDatabase, err)
 		return
 	}
 
-	json.NewEncoder(w).Encode(&models.RegisteredUserInfo{Username: username, Password: password})
 }
 
 // Invalidates bearer token of the user. Stores it in invalid_tokens table in

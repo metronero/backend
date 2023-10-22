@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS instance (
 
 CREATE TABLE IF NOT EXISTS instance_stats (
 	wallet_balance bigint DEFAULT 0 NOT NULL,
-	total_profits bigint DEFAULT 0 NOT NULL
+	total_sales bigint DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS accounts (
@@ -25,8 +25,10 @@ CREATE TABLE IF NOT EXISTS account_stats (
 CREATE TABLE IF NOT EXISTS merchants (
 	account_id UUID PRIMARY KEY REFERENCES accounts ON DELETE CASCADE,
 	active_template_id int DEFAULT 0,
-	disabled bool DEFAULT false NOT NULL
+	disabled bool DEFAULT false NOT NULL -- TODO: move to accounts
 );
+
+-- TODO: create viewers table and associate it with merchants
 
 CREATE TABLE IF NOT EXISTS merchant_stats (
 	account_id UUID PRIMARY KEY REFERENCES accounts ON DELETE CASCADE,
@@ -58,6 +60,12 @@ CREATE TABLE IF NOT EXISTS payments (
 	account_id UUID REFERENCES accounts ON DELETE CASCADE,
 	merchant_name text,
 	merchant_extra text DEFAULT ''
+);
+
+CREATE TABLE IF NOT EXISTS withdrawals (
+	withdrawal_id UUID PRIMARY KEY,
+	amount bigint NOT NULL,
+	withdraw_date timestamp NOT NULL
 );
 
 COMMIT;

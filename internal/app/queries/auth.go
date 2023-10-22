@@ -37,7 +37,7 @@ func UpdateUserLastLogin(ctx context.Context, id string) {
 	}
 }
 
-func UserRegister(ctx context.Context, username, passwordHash string) error {
+func UserRegister(ctx context.Context, username, passwordHash, role string) error {
 	id := uuid.New().String()
 
 	tx, err := db.Db.Begin(ctx)
@@ -46,8 +46,8 @@ func UserRegister(ctx context.Context, username, passwordHash string) error {
 	}
 	defer tx.Rollback(ctx)
 
-	if _, err := tx.Exec(ctx, "INSERT INTO accounts (account_id, username, password)"+
-		"VALUES ($1, $2, $3)", id, username, passwordHash); err != nil {
+	if _, err := tx.Exec(ctx, "INSERT INTO accounts (account_id, username, password, role)"+
+		"VALUES ($1, $2, $3, $4)", id, username, passwordHash, role); err != nil {
 		return err
 	}
 

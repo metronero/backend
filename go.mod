@@ -2,7 +2,7 @@ module gitlab.com/metronero/backend
 
 go 1.19
 
-//replace gitlab.com/metronero/metronero-go => /home/siren/projects/metronero-go
+//replace gitlab.com/metronero/metronero-go => ./metronero-go
 
 require (
 	github.com/go-chi/chi/v5 v5.0.10
