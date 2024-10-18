@@ -45,7 +45,7 @@ func GetAdminPaymentById(w http.ResponseWriter, r *http.Request) {
 func GetMerchantPayment(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
-		writeError(w, apierror.ErrInvalidToken, err)
+		writeError(w, apierror.ErrInvalidSession, err)
 		return
 	}
 	id := token["id"].(string)
@@ -61,7 +61,7 @@ func GetMerchantPayment(w http.ResponseWriter, r *http.Request) {
 func PostMerchantPayment(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
-		writeError(w, apierror.ErrInvalidToken, err)
+		writeError(w, apierror.ErrInvalidSession, err)
 		return
 	}
 	merchantId := token["id"].(string)

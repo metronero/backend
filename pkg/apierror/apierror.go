@@ -3,7 +3,7 @@ package apierror
 import "gitlab.com/metronero/backend/pkg/models"
 
 var (
-	ErrInvalidToken   = &models.ApiError{Code: 1, Msg: "Invalid token.", Status: 403}
+	ErrInvalidSession = &models.ApiError{Code: 1, Msg: "Invalid session.", Status: 403}
 	ErrUnauthorized   = &models.ApiError{Code: 2, Msg: "Unknown username or password.", Status: 401}
 	ErrRequired       = &models.ApiError{Code: 3, Msg: "Required field(s) can't be empty.", Status: 400}
 	ErrHash           = &models.ApiError{Code: 4, Msg: "Failed to hash password.", Status: 500}
@@ -19,4 +19,5 @@ var (
 	ErrWithdraw       = &models.ApiError{Code: 14, Msg: "Withdrawal errors.", Status: 500}
 	ErrNoFunds        = &models.ApiError{Code: 15, Msg: "No funds to withdraw.", Status: 500}
 	ErrPassGen        = &models.ApiError{Code: 16, Msg: "Failed to generate password.", Status: 500}
+	ErrSession        = &models.ApiError{Code: 17, Msg: "Failed to access session", Status: 500}
 )

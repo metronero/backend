@@ -1,12 +1,11 @@
 package server
 
 import (
+	"gitea.com/go-chi/session"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/jwtauth/v5"
 
 	"gitlab.com/metronero/backend/internal/app/controllers"
-	"gitlab.com/metronero/backend/internal/utils/config"
 )
 
 func registerRoutes() *chi.Mux {
@@ -17,12 +16,13 @@ func registerRoutes() *chi.Mux {
 	r.Use(middlewareServerHeader)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(session.Sessioner(session.Options{
+		CookieName: "MNSession",
+	}))
 
 	r.Post("/login", controllers.PostLogin)
 
 	r.Group(func(r chi.Router) {
-		r.Use(jwtauth.Verifier(config.JwtSecret))
-		r.Use(jwtauth.Authenticator)
 		r.Post("/logout", controllers.PostLogout)
 	})
 
@@ -30,8 +30,7 @@ func registerRoutes() *chi.Mux {
 
 	r.Route("/merchant", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
-			r.Use(jwtauth.Verifier(config.JwtSecret))
-			r.Use(jwtauth.Authenticator)
+			r.Use(middlewareMerchantArea)
 			r.Get("/", controllers.GetMerchant)
 			r.Post("/", controllers.PostMerchant)
 			r.Route("/payment", func(r chi.Router) {
@@ -48,8 +47,6 @@ func registerRoutes() *chi.Mux {
 
 	r.Route("/admin", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
-			r.Use(jwtauth.Verifier(config.JwtSecret))
-			r.Use(jwtauth.Authenticator)
 			r.Use(middlewareAdminArea)
 			r.Post("/register", controllers.PostRegister)
 			r.Route("/instance", func(r chi.Router) {

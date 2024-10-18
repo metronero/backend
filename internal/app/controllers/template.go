@@ -20,7 +20,7 @@ import (
 func GetMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
-		writeError(w, apierror.ErrInvalidToken, err)
+		writeError(w, apierror.ErrInvalidSession, err)
 		return
 	}
 
@@ -68,7 +68,7 @@ func PostMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
-		writeError(w, apierror.ErrInvalidToken, err)
+		writeError(w, apierror.ErrInvalidSession, err)
 		return
 	}
 	id := token["id"].(string)
@@ -90,7 +90,7 @@ func PostMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 func DeleteMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
-		writeError(w, apierror.ErrInvalidToken, err)
+		writeError(w, apierror.ErrInvalidSession, err)
 		return
 	}
 	accountId := token["id"].(string)

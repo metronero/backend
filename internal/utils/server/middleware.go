@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/go-chi/jwtauth/v5"
+	"gitea.com/go-chi/session"
 )
 
 const version = "0.0.0"
@@ -17,8 +17,24 @@ func middlewareServerHeader(next http.Handler) http.Handler {
 
 func middlewareAdminArea(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, c, err := jwtauth.FromContext(r.Context())
-		if c["username"].(string) != "admin" || err != nil {
+		sess := session.GetSession(r)
+		role := sess.Get("role")
+		roleStr, ok := role.(string)
+		if !ok || roleStr != "admin" {
+			http.Error(w, http.StatusText(http.StatusUnauthorized),
+				http.StatusUnauthorized)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func middlewareMerchantArea(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		sess := session.GetSession(r)
+		role := sess.Get("role")
+		roleStr, ok := role.(string)
+		if !ok || roleStr != "merchant" {
 			http.Error(w, http.StatusText(http.StatusUnauthorized),
 				http.StatusUnauthorized)
 			return

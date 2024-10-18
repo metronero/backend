@@ -11,17 +11,17 @@ import (
 	"gitlab.com/metronero/backend/pkg/models"
 )
 
-// Given an username, returns password hash
+// Given an username, returns account details
 func UserLogin(ctx context.Context, username string) (models.Account, error) {
 	var loginData models.Account
 
-	row, err := db.QueryRow(ctx, "SELECT account_id, password FROM accounts WHERE username=$1",
+	row, err := db.QueryRow(ctx, "SELECT account_id, password, role FROM accounts WHERE username=$1",
 		username)
 	if err != nil {
 		return loginData, err
 	}
 
-	if err := row.Scan(&loginData.AccountId, &loginData.PasswordHash); err != nil {
+	if err := row.Scan(&loginData.AccountId, &loginData.PasswordHash, &loginData.Role); err != nil {
 		return loginData, err
 	}
 
@@ -51,8 +51,4 @@ func UserRegister(ctx context.Context, username, passwordHash, role string) erro
 		return err
 	}
 	return tx.Commit(ctx)
-}
-
-func InvalidateToken(ctx context.Context, token string) error {
-	return db.Exec(ctx, "INSERT INTO invalid_tokens (token) VALUES ($1)", token)
 }

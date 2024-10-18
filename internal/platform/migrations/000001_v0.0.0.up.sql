@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS accounts (
 	account_id UUID PRIMARY KEY,
 	username text UNIQUE NOT NULL,
 	password text NOT NULL,
-	role text NOT NULL
+	role text NOT NULL DEFAULT 'merchant'
 );
 
 CREATE TABLE IF NOT EXISTS account_stats (
@@ -33,10 +33,6 @@ CREATE TABLE IF NOT EXISTS merchants (
 CREATE TABLE IF NOT EXISTS merchant_stats (
 	account_id UUID PRIMARY KEY REFERENCES accounts ON DELETE CASCADE,
 	total_sales bigint NOT NULL DEFAULT 0
-);
-
-CREATE TABLE IF NOT EXISTS invalid_tokens (
-	token text PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS callback_secrets (

@@ -3,10 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
-	"github.com/go-chi/jwtauth/v5"
-
+	"gitea.com/go-chi/session"
 	"gitlab.com/metronero/backend/internal/app/queries"
 	"gitlab.com/metronero/backend/internal/utils/auth"
 	"gitlab.com/metronero/backend/pkg/apierror"
@@ -14,28 +12,39 @@ import (
 )
 
 func PostLogin(w http.ResponseWriter, r *http.Request) {
-	// TODO: instead of form values use json data
-	username := r.FormValue("username")
-	password := r.FormValue("password")
+	var creds models.LoginRequest
+	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
+		writeError(w, apierror.ErrBadRequest, err)
+		return
+	}
 
-	if username == "" || password == "" {
+	if creds.Username == "" || creds.Password == "" {
 		writeError(w, apierror.ErrRequired, nil)
 		return
 	}
 
-	account, err := queries.UserLogin(r.Context(), username)
-	if err := auth.CompareHashAndPassword(account.PasswordHash, password); err != nil {
+	account, err := queries.UserLogin(r.Context(), creds.Username)
+	if err != nil {
+		writeError(w, apierror.ErrDatabase, err)
+		return
+	}
+	if err := auth.CompareHashAndPassword(account.PasswordHash, creds.Password); err != nil {
 		writeError(w, apierror.ErrUnauthorized, err)
 		return
 	}
-
-	token, expiry, err := auth.CreateUserToken(username, account.AccountId, 1*time.Hour)
-	if err != nil {
-		writeError(w, apierror.ErrTokenIssue, err)
+	sess := session.GetSession(r)
+	if err := sess.Set("username", account.Username); err != nil {
+		writeError(w, apierror.ErrSession, err)
 		return
 	}
-
-	json.NewEncoder(w).Encode(&models.ApiTokenInfo{Token: token, ValidUntil: expiry})
+	if err := sess.Set("accountid", account.AccountId); err != nil {
+		writeError(w, apierror.ErrSession, err)
+		return
+	}
+	if err := sess.Set("role", account.Role); err != nil {
+		writeError(w, apierror.ErrSession, err)
+		return
+	}
 }
 
 // Only the instance admin can register new users
@@ -65,12 +74,8 @@ func PostRegister(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// Invalidates bearer token of the user. Stores it in invalid_tokens table in
-// database until expiry of the token.
 func PostLogout(w http.ResponseWriter, r *http.Request) {
-	token := jwtauth.TokenFromHeader(r)
-	if err := queries.InvalidateToken(r.Context(), token); err != nil {
-		writeError(w, apierror.ErrDatabase, err)
-		return
-	}
+	sess := session.GetSession(r)
+	sess.Destroy(w, r)
+	w.WriteHeader(http.StatusOK)
 }
