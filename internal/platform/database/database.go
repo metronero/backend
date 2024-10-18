@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"gitlab.com/metronero/backend/internal/utils/config"
 )
@@ -16,7 +16,7 @@ var Db *pgxpool.Pool
 func Init() {
 	applyMigrations()
 	var err error
-	if Db, err = pgxpool.Connect(context.Background(), config.PostgresUri); err != nil {
+	if Db, err = pgxpool.New(context.Background(), config.PostgresUri); err != nil {
 		log.Fatal("Failed to connect to database: ", err)
 	}
 	bootstrap()

@@ -12,15 +12,15 @@ import (
 	"github.com/go-chi/jwtauth/v5"
 
 	"gitlab.com/metronero/backend/internal/utils/config"
-	"gitlab.com/metronero/metronero-go/api"
-	"gitlab.com/metronero/metronero-go/models"
+	"gitlab.com/metronero/backend/pkg/apierror"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 // Get a preview of the payment page template
 func GetMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
-		writeError(w, api.ErrInvalidToken, err)
+		writeError(w, apierror.ErrInvalidToken, err)
 		return
 	}
 
@@ -28,7 +28,7 @@ func GetMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 	var t *template.Template
 	p, err := url.JoinPath(config.TemplateDir, accountId)
 	if err != nil {
-		writeError(w, api.ErrTemplateLoad, err)
+		writeError(w, apierror.ErrTemplateLoad, err)
 		return
 	}
 	t, err = template.ParseFiles(p)
@@ -36,7 +36,7 @@ func GetMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, os.ErrNotExist) {
 			t = config.DefaultPaymentTemplate
 		} else {
-			writeError(w, api.ErrTemplateLoad, err)
+			writeError(w, apierror.ErrTemplateLoad, err)
 			return
 		}
 	}
@@ -61,25 +61,25 @@ func PostMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(20 << config.TemplateMaxSize)
 	file, _, err := r.FormFile("file")
 	if err != nil {
-		writeError(w, api.ErrBadRequest, err)
+		writeError(w, apierror.ErrBadRequest, err)
 		return
 	}
 	defer file.Close()
 
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
-		writeError(w, api.ErrInvalidToken, err)
+		writeError(w, apierror.ErrInvalidToken, err)
 		return
 	}
 	id := token["id"].(string)
 	p, err := url.JoinPath(config.TemplateDir, id)
 	if err != nil {
-		writeError(w, api.ErrTemplateSave, err)
+		writeError(w, apierror.ErrTemplateSave, err)
 		return
 	}
 	f, err := os.OpenFile(p, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
-		writeError(w, api.ErrTemplateSave, err)
+		writeError(w, apierror.ErrTemplateSave, err)
 		return
 	}
 	defer f.Close()
@@ -90,17 +90,17 @@ func PostMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 func DeleteMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
-		writeError(w, api.ErrInvalidToken, err)
+		writeError(w, apierror.ErrInvalidToken, err)
 		return
 	}
 	accountId := token["id"].(string)
 	p, err := url.JoinPath(config.TemplateDir, accountId)
 	if err != nil {
-		writeError(w, api.ErrTemplateDelete, err)
+		writeError(w, apierror.ErrTemplateDelete, err)
 		return
 	}
 	if err := os.Remove(p); err != nil && err != os.ErrNotExist {
-		writeError(w, api.ErrTemplateDelete, err)
+		writeError(w, apierror.ErrTemplateDelete, err)
 		return
 	}
 }

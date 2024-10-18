@@ -11,19 +11,19 @@ import (
 	"gitlab.com/moneropay/moneropay/v2/pkg/model"
 
 	"gitlab.com/metronero/backend/internal/app/queries"
-	"gitlab.com/metronero/metronero-go/api"
+	"gitlab.com/metronero/backend/pkg/apierror"
 )
 
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
 		// TODO: is this accurate?
-		writeError(w, api.ErrBadRequest, nil)
+		writeError(w, apierror.ErrBadRequest, nil)
 		return
 	}
 	var data model.ReceiveGetResponse
 	if err := json.Unmarshal(b, &data); err != nil {
-		writeError(w, api.ErrBadRequest, nil)
+		writeError(w, apierror.ErrBadRequest, nil)
 		return
 	}
 
@@ -36,7 +36,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		status = "Partial"
 	}
 
-	id := chi.URLParam(r, "payment_id")
+	id := chi.URLParam(r, "invoice_id")
 	callbackData := string(b)
 	// TODO: return the balance from this function to check if overpay occurred
 	if err := queries.UpdatePayment(context.Background(), id, status, callbackData); err != nil {

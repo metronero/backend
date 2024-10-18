@@ -9,8 +9,8 @@ import (
 
 	"gitlab.com/metronero/backend/internal/app/queries"
 	"gitlab.com/metronero/backend/internal/utils/auth"
-	"gitlab.com/metronero/metronero-go/api"
-	"gitlab.com/metronero/metronero-go/models"
+	"gitlab.com/metronero/backend/pkg/apierror"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 func PostLogin(w http.ResponseWriter, r *http.Request) {
@@ -19,19 +19,19 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	if username == "" || password == "" {
-		writeError(w, api.ErrRequired, nil)
+		writeError(w, apierror.ErrRequired, nil)
 		return
 	}
 
 	account, err := queries.UserLogin(r.Context(), username)
 	if err := auth.CompareHashAndPassword(account.PasswordHash, password); err != nil {
-		writeError(w, api.ErrUnauthorized, err)
+		writeError(w, apierror.ErrUnauthorized, err)
 		return
 	}
 
 	token, expiry, err := auth.CreateUserToken(username, account.AccountId, 1*time.Hour)
 	if err != nil {
-		writeError(w, api.ErrTokenIssue, err)
+		writeError(w, apierror.ErrTokenIssue, err)
 		return
 	}
 
@@ -42,24 +42,24 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 func PostRegister(w http.ResponseWriter, r *http.Request) {
 	var creds models.NewAccount
 	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
-		writeError(w, api.ErrBadRequest, err)
+		writeError(w, apierror.ErrBadRequest, err)
 		return
 	}
 
 	if creds.Username == "" || creds.Password == "" || creds.Role == "" {
-		writeError(w, api.ErrRequired, nil)
+		writeError(w, apierror.ErrRequired, nil)
 		return
 	}
 
 	passwordHashBytes, err := auth.HashPassword(creds.Password)
 	if err != nil {
-		writeError(w, api.ErrHash, err)
+		writeError(w, apierror.ErrHash, err)
 		return
 	}
 
 	if err := queries.UserRegister(r.Context(), creds.Username,
 		string(passwordHashBytes), creds.Role); err != nil {
-		writeError(w, api.ErrDatabase, err)
+		writeError(w, apierror.ErrDatabase, err)
 		return
 	}
 
@@ -70,7 +70,7 @@ func PostRegister(w http.ResponseWriter, r *http.Request) {
 func PostLogout(w http.ResponseWriter, r *http.Request) {
 	token := jwtauth.TokenFromHeader(r)
 	if err := queries.InvalidateToken(r.Context(), token); err != nil {
-		writeError(w, api.ErrDatabase, err)
+		writeError(w, apierror.ErrDatabase, err)
 		return
 	}
 }

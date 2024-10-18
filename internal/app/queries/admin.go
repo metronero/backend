@@ -5,22 +5,8 @@ import (
 	"fmt"
 
 	db "gitlab.com/metronero/backend/internal/platform/database"
-	"gitlab.com/metronero/metronero-go/models"
+	"gitlab.com/metronero/backend/pkg/models"
 )
-
-func GetAdminInfo(ctx context.Context) (*models.AdminDashboardInfo, error) {
-	var (
-		a   models.AdminDashboardInfo
-		err error
-	)
-	if a.Stats, err = InstanceStats(ctx); err != nil {
-		return nil, err
-	}
-	if a.RecentPayments, err = GetAllPayments(ctx); err != nil {
-		return nil, err
-	}
-	return &a, nil
-}
 
 func AdminEditMerchant(ctx context.Context, conf *models.MerchantSettings) error {
 	query := "UPDATE merchants SET"

@@ -6,7 +6,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"gitlab.com/metronero/metronero-go/models"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 func writeError(w http.ResponseWriter, apiErr *models.ApiError, err error) {

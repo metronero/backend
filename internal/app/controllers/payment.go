@@ -16,15 +16,15 @@ import (
 
 	"gitlab.com/metronero/backend/internal/app/queries"
 	"gitlab.com/metronero/backend/internal/utils/moneropay"
-	"gitlab.com/metronero/metronero-go/api"
-	"gitlab.com/metronero/metronero-go/models"
+	"gitlab.com/metronero/backend/pkg/apierror"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 // Return all payments submitted by all merchants.
 func GetAdminPayment(w http.ResponseWriter, r *http.Request) {
 	p, err := queries.GetAllPayments(r.Context())
 	if err != nil {
-		writeError(w, api.ErrDatabase, err)
+		writeError(w, apierror.ErrDatabase, err)
 		return
 	}
 	json.NewEncoder(w).Encode(p)
@@ -35,7 +35,7 @@ func GetAdminPaymentById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "merchant_id")
 	p, err := queries.GetPaymentsByAccount(r.Context(), id)
 	if err != nil {
-		writeError(w, api.ErrDatabase, err)
+		writeError(w, apierror.ErrDatabase, err)
 		return
 	}
 	json.NewEncoder(w).Encode(p)
@@ -45,13 +45,13 @@ func GetAdminPaymentById(w http.ResponseWriter, r *http.Request) {
 func GetMerchantPayment(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
-		writeError(w, api.ErrInvalidToken, err)
+		writeError(w, apierror.ErrInvalidToken, err)
 		return
 	}
 	id := token["id"].(string)
 	p, err := queries.GetPaymentsByAccount(r.Context(), id)
 	if err != nil {
-		writeError(w, api.ErrDatabase, err)
+		writeError(w, apierror.ErrDatabase, err)
 		return
 	}
 	json.NewEncoder(w).Encode(p)
@@ -61,25 +61,25 @@ func GetMerchantPayment(w http.ResponseWriter, r *http.Request) {
 func PostMerchantPayment(w http.ResponseWriter, r *http.Request) {
 	_, token, err := jwtauth.FromContext(r.Context())
 	if err != nil {
-		writeError(w, api.ErrInvalidToken, err)
+		writeError(w, apierror.ErrInvalidToken, err)
 		return
 	}
 	merchantId := token["id"].(string)
 	name := token["username"].(string)
 	var req models.PostPaymentRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, api.ErrBadRequest, nil)
+		writeError(w, apierror.ErrBadRequest, nil)
 		return
 	}
 	paymentId := uuid.New().String()
 	subaddress, err := moneropay.CreatePayment(req.Amount, paymentId)
 	if err != nil {
-		writeError(w, api.ErrMoneropay, nil)
+		writeError(w, apierror.ErrMoneropay, nil)
 		return
 	}
 	if err := queries.CreatePaymentRequest(r.Context(), paymentId, merchantId, name,
 		subaddress, &req); err != nil {
-		writeError(w, api.ErrDatabase, err)
+		writeError(w, apierror.ErrDatabase, err)
 		return
 	}
 	res := &models.PostPaymentResponse{PaymentId: paymentId, Address: subaddress}
@@ -88,11 +88,11 @@ func PostMerchantPayment(w http.ResponseWriter, r *http.Request) {
 
 // Load merchant template, payment details and serve payment page.
 func PaymentPageHandler(w http.ResponseWriter, r *http.Request) {
-	paymentId := chi.URLParam(r, "payment_id")
+	paymentId := chi.URLParam(r, "invoice_id")
 	// Get payment details
 	p, err := queries.GetPaymentPageInfo(r.Context(), paymentId)
 	if err != nil {
-		writeError(w, api.ErrDatabase, err)
+		writeError(w, apierror.ErrDatabase, err)
 		return
 	}
 
@@ -103,18 +103,18 @@ func PaymentPageHandler(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, os.ErrNotExist) {
 			t, err = template.ParseFiles("./data/merchant_templates/default")
 			if err != nil {
-				writeError(w, api.ErrTemplateLoad, err)
+				writeError(w, apierror.ErrTemplateLoad, err)
 				return
 			}
 		} else {
-			writeError(w, api.ErrTemplateLoad, err)
+			writeError(w, apierror.ErrTemplateLoad, err)
 			return
 		}
 	}
 
 	png, err := qrcode.Encode(p.Address, qrcode.Medium, 256)
 	if err != nil {
-		writeError(w, api.ErrTemplateLoad, err)
+		writeError(w, apierror.ErrTemplateLoad, err)
 	}
 	p.Qr = base64.StdEncoding.EncodeToString(png)
 	p.AmountFloat = walletrpc.XMRToDecimal(p.Amount)

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	db "gitlab.com/metronero/backend/internal/platform/database"
-	"gitlab.com/metronero/metronero-go/models"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 func InstanceInfo(ctx context.Context) (*models.InstanceInfo, error) {

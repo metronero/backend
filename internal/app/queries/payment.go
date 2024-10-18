@@ -6,12 +6,12 @@ import (
 	"time"
 
 	db "gitlab.com/metronero/backend/internal/platform/database"
-	"gitlab.com/metronero/metronero-go/models"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 func GetPaymentsByAccount(ctx context.Context, id string) ([]models.Payment, error) {
 	// If an account ID was specified, get payments that belong to this account.
-	query := "SELECT payment_id,merchant_name,amount,fee,order_id,status,last_update FROM payments"
+	query := "SELECT invoice_id,merchant_name,amount,fee,order_id,status,last_update FROM payments"
 	if id != "" {
 		query = fmt.Sprintf("%s WHERE account_id='%s'", query, id)
 	}
@@ -45,7 +45,7 @@ func GetAllPayments(ctx context.Context) ([]models.Payment, error) {
 func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, name, address string,
 	req *models.PostPaymentRequest) error {
 	return db.Exec(ctx,
-		"INSERT INTO payments(payment_id,amount,order_id,merchant_name,account_id,accept_url,"+
+		"INSERT INTO invoices(invoice_id,amount,order_id,merchant_name,account_id,accept_url,"+
 			"cancel_url,callback_url,merchant_extra,address,fee,last_update)"+
 			"VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)", paymentId, req.Amount, req.OrderId,
 		name, merchantId, req.AcceptUrl, req.CancelUrl, req.CallbackUrl, req.ExtraData, address, 0, time.Now())
@@ -53,8 +53,8 @@ func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, name, addr
 
 func GetPaymentPageInfo(ctx context.Context, id string) (*models.PaymentPageInfo, error) {
 	row, err := db.QueryRow(ctx,
-		"SELECT payment_id,amount,order_id,merchant_name,accept_url,cancel_url,"+
-			"address,merchant_extra,account_id,status FROM payments WHERE payment_id=$1", id)
+		"SELECT invoice_id,amount,order_id,merchant_name,accept_url,cancel_url,"+
+			"address,merchant_extra,account_id,status FROM payments WHERE invoice_id=$1", id)
 	if err != nil {
 		return nil, err
 	}
@@ -68,6 +68,6 @@ func GetPaymentPageInfo(ctx context.Context, id string) (*models.PaymentPageInfo
 
 func UpdatePayment(ctx context.Context, id, status, data string) error {
 	return db.Exec(ctx,
-		"UPDATE payments SET status=$1,callback_data=$2,last_update=$3 "+
-			"WHERE payment_id=$4", status, data, time.Now(), id)
+		"UPDATE invoices SET status=$1,callback_data=$2,last_update=$3 "+
+			"WHERE invoice_id=$4", status, data, time.Now(), id)
 }

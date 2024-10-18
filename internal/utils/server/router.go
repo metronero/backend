@@ -51,7 +51,6 @@ func registerRoutes() *chi.Mux {
 			r.Use(jwtauth.Verifier(config.JwtSecret))
 			r.Use(jwtauth.Authenticator)
 			r.Use(middlewareAdminArea)
-			r.Get("/", controllers.GetAdmin)
 			r.Post("/register", controllers.PostRegister)
 			r.Route("/instance", func(r chi.Router) {
 				r.Get("/", controllers.GetAdminInstance)
@@ -74,10 +73,10 @@ func registerRoutes() *chi.Mux {
 	})
 
 	// For handling MoneroPay callbacks
-	r.Post("/callback/{payment_id}", controllers.CallbackHandler)
+	r.Post("/callback/{invoice_id}", controllers.CallbackHandler)
 
 	// For handling payment page requests
-	r.Get("/p/{payment_id}", controllers.PaymentPageHandler)
+	r.Get("/p/{invoice_id}", controllers.PaymentPageHandler)
 
 	return r
 }

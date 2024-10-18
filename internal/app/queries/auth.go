@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	db "gitlab.com/metronero/backend/internal/platform/database"
-	"gitlab.com/metronero/metronero-go/models"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 // Given an username, returns password hash
@@ -46,24 +46,10 @@ func UserRegister(ctx context.Context, username, passwordHash, role string) erro
 	}
 	defer tx.Rollback(ctx)
 
-	if _, err := tx.Exec(ctx, "INSERT INTO accounts (account_id, username, password, role)"+
-		"VALUES ($1, $2, $3, $4)", id, username, passwordHash, role); err != nil {
+	if _, err := tx.Exec(ctx, "INSERT INTO accounts (account_id, username, password, role, creation_date)"+
+		"VALUES ($1, $2, $3, $4, $5)", id, username, passwordHash, role, time.Now()); err != nil {
 		return err
 	}
-
-	if _, err := tx.Exec(ctx, "INSERT INTO account_stats (account_id, creation_date)"+
-		"VALUES ($1, $2)", id, time.Now()); err != nil {
-		return err
-	}
-	if username != "admin" {
-		if _, err := tx.Exec(ctx, "INSERT INTO merchants (account_id) VALUES ($1)", id); err != nil {
-			return err
-		}
-		if _, err := tx.Exec(ctx, "INSERT INTO merchant_stats (account_id) VALUES ($1)", id); err != nil {
-			return err
-		}
-	}
-
 	return tx.Commit(ctx)
 }
 
