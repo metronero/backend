@@ -16,7 +16,7 @@ func GetMerchantInfo(ctx context.Context, id string) (*models.MerchantDashboardI
 	if err != nil {
 		return nil, err
 	}
-	info.RecentPayments, err = GetPaymentsByAccount(ctx, id)
+	info.RecentPayments, err = GetPaymentsByAccount(ctx, id, 10)
 	if err != nil {
 		return nil, err
 	}

@@ -9,37 +9,50 @@ import (
 	"gitlab.com/metronero/backend/pkg/models"
 )
 
-func GetPaymentsByAccount(ctx context.Context, id string) ([]models.Invoice, error) {
-	// If an account ID was specified, get payments that belong to this account.
+func GetPaymentsByAccount(ctx context.Context, id string, limit int) ([]models.Invoice, error) {
+	// Base query to get payments.
 	query := "SELECT invoice_id,merchant_name,amount,fee,order_id,status,last_update FROM payments"
+
+	// If an account ID is provided, filter by account_id.
 	if id != "" {
 		query = fmt.Sprintf("%s WHERE account_id='%s'", query, id)
 	}
+
+	// Order by last_update in descending order (most recent first).
 	query += " ORDER BY last_update DESC"
 
+	// Apply the limit if it's greater than 0.
+	if limit > 0 {
+		query = fmt.Sprintf("%s LIMIT %d", query, limit)
+	}
+
+	// Prepare to store the results.
 	var payments []models.Invoice
 
+	// Execute the query.
 	rows, err := db.Query(ctx, query)
 	if err != nil {
 		return payments, err
 	}
+	defer rows.Close()
 
+	// Iterate through the result set.
 	for rows.Next() {
 		var temp models.Invoice
 		if err := rows.Scan(&temp.InvoiceId, &temp.MerchantName, &temp.Amount, &temp.Fee,
 			&temp.OrderId, &temp.Status, &temp.LastUpdate); err != nil {
-			// TODO: check in here whether if the error was caused unknown account_id
-			// or database related error
 			return payments, err
 		}
 		payments = append(payments, temp)
 	}
+
+	// Return the payments and any potential error.
 	return payments, nil
 }
 
 // Get all payments from all merchants. Invoked by the admin user.
 func GetAllPayments(ctx context.Context) ([]models.Invoice, error) {
-	return GetPaymentsByAccount(ctx, "")
+	return GetPaymentsByAccount(ctx, "", 0)
 }
 
 func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, name, address string,

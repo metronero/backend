@@ -33,7 +33,7 @@ func GetAdminPayment(w http.ResponseWriter, r *http.Request) {
 // Return all payments associated with the merchant ID.
 func GetAdminPaymentById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "merchant_id")
-	p, err := queries.GetPaymentsByAccount(r.Context(), id)
+	p, err := queries.GetPaymentsByAccount(r.Context(), id, 0)
 	if err != nil {
 		writeError(w, apierror.ErrDatabase, err)
 		return
@@ -49,7 +49,7 @@ func GetMerchantPayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id := token["id"].(string)
-	p, err := queries.GetPaymentsByAccount(r.Context(), id)
+	p, err := queries.GetPaymentsByAccount(r.Context(), id, 0)
 	if err != nil {
 		writeError(w, apierror.ErrDatabase, err)
 		return
@@ -128,4 +128,13 @@ func GetInvoiceCount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	json.NewEncoder(w).Encode(&models.GetInvoiceCountResponse{Count: total, Pending: pending})
+}
+
+func GetAdminInvoiceRecent(w http.ResponseWriter, r *http.Request) {
+	p, err := queries.GetPaymentsByAccount(r.Context(), "", 10)
+	if err != nil {
+		writeError(w, apierror.ErrDatabase, err)
+		return
+	}
+	json.NewEncoder(w).Encode(p)
 }

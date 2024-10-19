@@ -10,7 +10,16 @@ import (
 
 // Returns a list of withdrawals.
 func GetAdminWithdrawal(w http.ResponseWriter, r *http.Request) {
-	p, err := queries.GetWithdrawals(r.Context())
+	p, err := queries.GetWithdrawals(r.Context(), 0)
+	if err != nil {
+		writeError(w, apierror.ErrDatabase, err)
+		return
+	}
+	json.NewEncoder(w).Encode(p)
+}
+
+func GetAdminWithdrawalRecent(w http.ResponseWriter, r *http.Request) {
+	p, err := queries.GetWithdrawals(r.Context(), 10)
 	if err != nil {
 		writeError(w, apierror.ErrDatabase, err)
 		return

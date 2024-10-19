@@ -61,11 +61,13 @@ func registerRoutes() *chi.Mux {
 			r.Get("/balance", controllers.GetBalance)
 			r.Route("/withdrawal", func(r chi.Router) {
 				r.Get("/", controllers.GetAdminWithdrawal)
+				r.Get("/recent", controllers.GetAdminWithdrawalRecent)
 			})
 			r.Route("/invoice", func(r chi.Router) {
 				r.Get("/", controllers.GetAdminPayment)
 				r.Get("/{merchant_id}", controllers.GetAdminPaymentById)
 				r.Get("/count", controllers.GetInvoiceCount)
+				r.Get("/recent", controllers.GetAdminInvoiceRecent)
 			})
 			r.Route("/merchant", func(r chi.Router) {
 				r.Get("/{merchant_id}", controllers.GetAdminMerchantById)

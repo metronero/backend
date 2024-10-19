@@ -2,18 +2,23 @@ package queries
 
 import (
 	"context"
+	"fmt"
 
 	db "gitlab.com/metronero/backend/internal/platform/database"
 	"gitlab.com/metronero/backend/pkg/models"
 )
 
-func GetWithdrawals(ctx context.Context) ([]models.Withdrawal, error) {
-	query := "SELECT withdrawal_id,amount,withdraw_date FROM withdraw ORDER BY withdraw_date DESC"
+func GetWithdrawals(ctx context.Context, limit int) ([]models.Withdrawal, error) {
+	query := "SELECT withdrawal_id, amount, withdraw_date FROM withdraw ORDER BY withdraw_date DESC"
+	if limit > 0 {
+		query = fmt.Sprintf("%s LIMIT %d", query, limit)
+	}
 
 	rows, err := db.Query(ctx, query)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	var withdrawals []models.Withdrawal
 	for rows.Next() {

@@ -6,9 +6,7 @@ type Invoice struct {
 	InvoiceId    string `json:"invoice_id"`
 	MerchantName string `json:"merchant_name"`
 	Amount       uint64 `json:"amount"`
-	AmountFloat  string `json:"amount_float,omitempty"`
 	Fee          uint64 `json:"fee"`
-	FeeFloat     string `json:"fee_float,omitempty"`
 	// Merchant provided ID for this payment
 	OrderId string `json:"order_id,omitempty"`
 
@@ -45,9 +43,7 @@ type InvoiceFull struct {
 	InvoiceId    string `json:"invoice_id"`
 	MerchantName string `json:"merchant_name"`
 	Amount       uint64 `json:"amount"`
-	AmountFloat  string `json:"amount_float,omitempty"`
 	Fee          uint64 `json:"fee"`
-	FeeFloat     string `json:"fee_float,omitempty"`
 
 	// Merchant provided ID for this payment
 	OrderId string `json:"order_id,omitempty"`
