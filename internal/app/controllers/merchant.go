@@ -71,5 +71,5 @@ func GetMerchantCount(w http.ResponseWriter, r *http.Request) {
 		writeError(w, apierror.ErrDatabase, err)
 		return
 	}
-	json.NewEncoder(w).Encode(&models.GetMerchantCountResponse{Count: total, Active: active})
+	json.NewEncoder(w).Encode(models.GetMerchantCountResponse{Count: total, Active: active})
 }

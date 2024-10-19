@@ -26,7 +26,15 @@ type NewAccount struct {
 	Password string `json:"password"`
 }
 
+type CreateAccountResponse struct {
+	AccountId string `json:"id"`
+}
+
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+}
+
+type LoginResponse struct {
+	Role string `json:"role"`
 }

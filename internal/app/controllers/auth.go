@@ -45,6 +45,7 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 		writeError(w, apierror.ErrSession, err)
 		return
 	}
+	json.NewEncoder(w).Encode(models.LoginResponse{Role: account.Role})
 }
 
 // Only the instance admin can register new users
@@ -66,11 +67,13 @@ func PostRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := queries.UserRegister(r.Context(), creds.Username,
-		string(passwordHashBytes), creds.Role); err != nil {
+	accId, err := queries.UserRegister(r.Context(), creds.Username,
+		string(passwordHashBytes), creds.Role)
+	if err != nil {
 		writeError(w, apierror.ErrDatabase, err)
 		return
 	}
+	json.NewEncoder(w).Encode(models.CreateAccountResponse{AccountId: accId})
 
 }
 

@@ -37,24 +37,24 @@ func UpdateUserLastLogin(ctx context.Context, id string) {
 	}
 }
 
-func UserRegister(ctx context.Context, username, passwordHash, role string) error {
+func UserRegister(ctx context.Context, username, passwordHash, role string) (string, error) {
 	id := uuid.New().String()
 
 	tx, err := db.Db.Begin(ctx)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer tx.Rollback(ctx)
 
 	if _, err := tx.Exec(ctx, "INSERT INTO accounts (account_id, username, password, role, creation_date)"+
 		"VALUES ($1, $2, $3, $4, $5)", id, username, passwordHash, role, time.Now()); err != nil {
-		return err
+		return "", err
 	}
 
 	if role == "merchant" {
 		if _, err := tx.Exec(ctx, "INSERT INTO merchants (account_id) VALUES ($1)", id); err != nil {
-			return err
+			return "", err
 		}
 	}
-	return tx.Commit(ctx)
+	return id, tx.Commit(ctx)
 }
