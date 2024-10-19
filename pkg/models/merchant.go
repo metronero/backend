@@ -3,12 +3,9 @@ package models
 import "time"
 
 type Merchant struct {
-	AccountId      string `json:"id"`
-	Name           string `json:"name"`
-	CommissionRate uint64 `json:"commission_rate"`
-	WalletAddress  string `json:"wallet_address"`
-	TemplateId     string `json:"template_id"`
-	Disabled       bool   `json:"disabled"`
+	AccountId string `json:"id"`
+	Name      string `json:"name"`
+	Disabled  bool   `json:"disabled"`
 }
 
 type MerchantStats struct {
@@ -28,11 +25,6 @@ type MerchantSettings struct {
 	AccountId      string  `json:"account_id,omitempty"`
 	CommissionRate *uint64 `json:"commission_rate,omitempty"`
 	Disabled       *bool   `json:"disabled,omitempty"`
-}
-
-type MerchantDashboardInfo struct {
-	Stats          MerchantStats `json:"merchant_stats"`
-	RecentPayments []Invoice     `json:"recent_payments"`
 }
 
 type GetMerchantCountResponse struct {

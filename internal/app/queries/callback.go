@@ -30,19 +30,10 @@ func UpdateBalances(ctx context.Context, paymentId string, amount uint64) {
 	defer tx.Rollback(ctx)
 
 	if _, err := tx.Exec(ctx,
-		"UPDATE merchant_stats SET balance=balance+$1,total_sales=total_sales+$1 WHERE account_id=$2",
+		"UPDATE merchants SET total_sales=total_sales+$1 WHERE account_id=$2",
 		amount, accountId); err != nil {
 		log.Error().Err(err).Str("invoice_id", paymentId).Str("account_id", accountId).
-			Msg("Failed to update account balance")
-		return
-	}
-
-	// TODO: change from hardcoded 0 once fees are implemented
-	if _, err := tx.Exec(ctx,
-		"UPDATE instance_stats SET wallet_balance=wallet_balance+$1,total_profits=$2",
-		amount, 0); err != nil {
-		log.Error().Err(err).Str("invoice_id", paymentId).Str("account_id", accountId).
-			Msg("Failed to update instance wallet balance")
+			Msg("Failed to update merchant's total sales")
 		return
 	}
 

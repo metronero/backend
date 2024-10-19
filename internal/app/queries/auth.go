@@ -31,7 +31,7 @@ func UserLogin(ctx context.Context, username string) (models.Account, error) {
 }
 
 func UpdateUserLastLogin(ctx context.Context, id string) {
-	if err := db.Exec(ctx, "UPDATE account_stats SET last_login=$1 WHERE account_id=$2",
+	if err := db.Exec(ctx, "UPDATE accounts SET last_login=$1 WHERE account_id=$2",
 		time.Now(), id); err != nil {
 		log.Error().Err(err).Msg("Failed to update account last login")
 	}
@@ -49,6 +49,12 @@ func UserRegister(ctx context.Context, username, passwordHash, role string) erro
 	if _, err := tx.Exec(ctx, "INSERT INTO accounts (account_id, username, password, role, creation_date)"+
 		"VALUES ($1, $2, $3, $4, $5)", id, username, passwordHash, role, time.Now()); err != nil {
 		return err
+	}
+
+	if role == "merchant" {
+		if _, err := tx.Exec(ctx, "INSERT INTO merchants (account_id) VALUES ($1)", id); err != nil {
+			return err
+		}
 	}
 	return tx.Commit(ctx)
 }

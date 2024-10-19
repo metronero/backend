@@ -42,9 +42,5 @@ func SaveWithdrawal(ctx context.Context, w *models.Withdrawal) error {
 			"VALUES($1,$2,$3)", w.Id, w.Amount, w.Date); err != nil {
 		return err
 	}
-	if _, err := tx.Exec(ctx, "UPDATE instance_stats SET wallet_balance=wallet_balance-$1",
-		w.Amount); err != nil {
-		return err
-	}
 	return tx.Commit(ctx)
 }

@@ -5,29 +5,11 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/jwtauth/v5"
 
 	"gitlab.com/metronero/backend/internal/app/queries"
 	"gitlab.com/metronero/backend/pkg/apierror"
 	"gitlab.com/metronero/backend/pkg/models"
 )
-
-// Recaps relevant activity to be displayed on the merchant dashboard.
-// Returns recent payments and merchant's withdrawable balance, total sales.
-func GetMerchant(w http.ResponseWriter, r *http.Request) {
-	_, token, err := jwtauth.FromContext(r.Context())
-	if err != nil {
-		writeError(w, apierror.ErrInvalidSession, err)
-		return
-	}
-	id := token["id"].(string)
-	info, err := queries.GetMerchantInfo(r.Context(), id)
-	if err != nil {
-		writeError(w, apierror.ErrDatabase, err)
-		return
-	}
-	json.NewEncoder(w).Encode(info)
-}
 
 // Update merchant account settings as a merchant.
 func PostMerchant(w http.ResponseWriter, r *http.Request) {

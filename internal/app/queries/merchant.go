@@ -7,35 +7,6 @@ import (
 	"gitlab.com/metronero/backend/pkg/models"
 )
 
-func GetMerchantInfo(ctx context.Context, id string) (*models.MerchantDashboardInfo, error) {
-	var (
-		info models.MerchantDashboardInfo
-		err  error
-	)
-	info.Stats, err = MerchantStats(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	info.RecentPayments, err = GetPaymentsByAccount(ctx, id, 10)
-	if err != nil {
-		return nil, err
-	}
-	return &info, nil
-}
-
-func MerchantStats(ctx context.Context, id string) (models.MerchantStats, error) {
-	var stats models.MerchantStats
-	row, err := db.QueryRow(ctx,
-		"SELECT balance, total_sales FROM merchant_stats WHERE account_id=$1", id)
-	if err != nil {
-		return stats, err
-	}
-	if err := row.Scan(&stats.Balance, &stats.TotalSales); err != nil {
-		return stats, err
-	}
-	return stats, nil
-}
-
 func ConfigureMerchant(ctx context.Context, id string, conf *models.MerchantSettings) error {
 	// TODO
 	return nil
@@ -67,7 +38,7 @@ func GetMerchantById(ctx context.Context, id string) (models.Merchant, error) {
 	if err != nil {
 		return m, err
 	}
-	err = row.Scan(&m.AccountId, &m.CommissionRate, &m.Disabled, &m.Name)
+	err = row.Scan(&m.AccountId, &m.Disabled, &m.Name)
 	return m, err
 }
 

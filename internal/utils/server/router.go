@@ -39,7 +39,6 @@ func registerRoutes() *chi.Mux {
 	r.Route("/merchant", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
 			r.Use(middlewareMerchantArea)
-			r.Get("/", controllers.GetMerchant)
 			r.Post("/", controllers.PostMerchant)
 			r.Route("/payment", func(r chi.Router) {
 				r.Get("/", controllers.GetMerchantPayment)
