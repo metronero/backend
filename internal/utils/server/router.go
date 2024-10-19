@@ -31,10 +31,10 @@ func registerRoutes() *chi.Mux {
 	r.Post("/login", controllers.PostLogin)
 
 	r.Group(func(r chi.Router) {
+		r.Use(middlewareAuthArea)
 		r.Post("/logout", controllers.PostLogout)
+		r.Get("/health", controllers.GetHealth) // TODO: more checks
 	})
-
-	// r.Get("/health", controllers.Health)
 
 	r.Route("/merchant", func(r chi.Router) {
 		r.Group(func(r chi.Router) {
@@ -57,22 +57,22 @@ func registerRoutes() *chi.Mux {
 		r.Group(func(r chi.Router) {
 			r.Use(middlewareAdminArea)
 			r.Post("/register", controllers.PostRegister)
-			r.Route("/instance", func(r chi.Router) {
-				r.Get("/", controllers.GetAdminInstance)
-				r.Post("/", controllers.PostAdminInstance)
-			})
+			r.Get("/instance", controllers.GetAdminInstance)
+			r.Get("/balance", controllers.GetBalance)
 			r.Route("/withdrawal", func(r chi.Router) {
 				r.Get("/", controllers.GetAdminWithdrawal)
 			})
-			r.Route("/payment", func(r chi.Router) {
+			r.Route("/invoice", func(r chi.Router) {
 				r.Get("/", controllers.GetAdminPayment)
 				r.Get("/{merchant_id}", controllers.GetAdminPaymentById)
+				r.Get("/count", controllers.GetInvoiceCount)
 			})
 			r.Route("/merchant", func(r chi.Router) {
 				r.Get("/{merchant_id}", controllers.GetAdminMerchantById)
 				r.Post("/{merchant_id}", controllers.PostAdminMerchantById)
 				r.Delete("/{merchant_id}", controllers.DeleteAdminMerchantById)
 				r.Get("/", controllers.GetAdminMerchant)
+				r.Get("/count", controllers.GetMerchantCount)
 			})
 		})
 	})

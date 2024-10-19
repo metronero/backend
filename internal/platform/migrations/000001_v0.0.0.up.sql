@@ -25,10 +25,8 @@ CREATE TABLE IF NOT EXISTS account_stats (
 CREATE TABLE IF NOT EXISTS merchants (
 	account_id UUID PRIMARY KEY REFERENCES accounts ON DELETE CASCADE,
 	active_template_id int DEFAULT 0,
-	disabled bool DEFAULT false NOT NULL -- TODO: move to accounts
+	disabled bool DEFAULT false NOT NULL
 );
-
--- TODO: create viewers table and associate it with merchants
 
 CREATE TABLE IF NOT EXISTS merchant_stats (
 	account_id UUID PRIMARY KEY REFERENCES accounts ON DELETE CASCADE,

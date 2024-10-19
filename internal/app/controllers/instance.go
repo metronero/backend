@@ -5,26 +5,27 @@ import (
 	"net/http"
 
 	"gitlab.com/metronero/backend/internal/app/queries"
+	"gitlab.com/metronero/backend/internal/utils/moneropay"
 	"gitlab.com/metronero/backend/pkg/apierror"
 	"gitlab.com/metronero/backend/pkg/models"
 )
 
 func GetAdminInstance(w http.ResponseWriter, r *http.Request) {
-	instance, err := queries.InstanceInfo(r.Context())
+	instanceVer, err := queries.InstanceVersion(r.Context())
 	if err != nil {
 		writeError(w, apierror.ErrDatabase, err)
 		return
 	}
-	json.NewEncoder(w).Encode(instance)
-}
 
-func PostAdminInstance(w http.ResponseWriter, r *http.Request) {
-	var conf models.Instance
-	if err := json.NewDecoder(r.Body).Decode(&conf); err != nil {
-		writeError(w, apierror.ErrBadRequest, err)
+	mpayHealth, mpayVer, err := moneropay.CheckHealth()
+	if err != nil {
+		writeError(w, apierror.ErrMoneropay, err)
 		return
 	}
-	if err := queries.UpdateInstance(r.Context(), &conf); err != nil {
-		writeError(w, apierror.ErrDatabase, err)
-	}
+
+	json.NewEncoder(w).Encode(models.GetInstanceInfoResponse{
+		Version:          instanceVer,
+		MoneroPayVersion: mpayVer,
+		Healthy:          mpayHealth, // TODO: more checks to evaluate health
+	})
 }

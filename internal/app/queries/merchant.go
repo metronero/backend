@@ -75,3 +75,16 @@ func DeleteMerchantById(ctx context.Context, id string) error {
 	return db.Exec(ctx,
 		"DELETE FROM accounts WHERE account_id=$1", id)
 }
+
+func GetMerchantCount(ctx context.Context) (uint64, uint64, error) {
+	var total, active uint64
+	row, err := db.QueryRow(ctx,
+		"SELECT COUNT(*),COUNT(CASE WHEN disabled = false THEN 1 END) FROM merchants")
+	if err != nil {
+		return 0, 0, err
+	}
+	if err := row.Scan(&total, &active); err != nil {
+		return 0, 0, err
+	}
+	return total, active, nil
+}

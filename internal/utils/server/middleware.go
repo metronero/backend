@@ -42,3 +42,17 @@ func middlewareMerchantArea(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+// Check if the session is authenticated regardless of role
+func middlewareAuthArea(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		sess := session.GetSession(r)
+		id := sess.Get("accountid")
+		if idStr, ok := id.(string); !ok || idStr == "" {
+			http.Error(w, http.StatusText(http.StatusUnauthorized),
+				http.StatusUnauthorized)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}

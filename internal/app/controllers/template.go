@@ -42,7 +42,7 @@ func GetMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Execute with dummy data
-	t.Execute(w, &models.PaymentPageInfo{
+	t.Execute(w, &models.InvoicePageInfo{
 		InvoiceId:    "0b1b6a94-9ec2-4bdf-8251-6a46aca6a332",
 		MerchantName: token["username"].(string),
 		Amount:       120000000000,

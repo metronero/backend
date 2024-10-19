@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type Payment struct {
+type Invoice struct {
 	InvoiceId    string `json:"invoice_id"`
 	MerchantName string `json:"merchant_name"`
 	Amount       uint64 `json:"amount"`
@@ -18,7 +18,7 @@ type Payment struct {
 }
 
 // Payment data passed to checkout page template
-type PaymentPageInfo struct {
+type InvoicePageInfo struct {
 	InvoiceId    string `json:"invoice_id"`
 	MerchantName string `json:"merchant_name"`
 	TemplateId   string `json:"template_id"`
@@ -29,19 +29,19 @@ type PaymentPageInfo struct {
 	OrderId string `json:"order_id,omitempty"`
 
 	// Possible statuses: pending, confirming, finished, cancelled, withdrawn
-	Status      string    `json:"status"`
-	LastUpdate  time.Time `json:"last_update"`
-	AcceptUrl   string    `json:"accept_url,omitempty"`
-	CancelUrl   string    `json:"cancel_url,omitempty"`
-	Address     string    `json:"address"`
-	Qr          string    `json:"qr"`
+	Status     string    `json:"status"`
+	LastUpdate time.Time `json:"last_update"`
+	AcceptUrl  string    `json:"accept_url,omitempty"`
+	CancelUrl  string    `json:"cancel_url,omitempty"`
+	Address    string    `json:"address"`
+	Qr         string    `json:"qr"`
 
 	// Merchant provided extra data field
 	ExtraData string `json:"extra_data,omitempty"`
 }
 
 // Contains all information related to a payment
-type PaymentFull struct {
+type InvoiceFull struct {
 	InvoiceId    string `json:"invoice_id"`
 	MerchantName string `json:"merchant_name"`
 	Amount       uint64 `json:"amount"`
@@ -64,7 +64,7 @@ type PaymentFull struct {
 	ExtraData string `json:"extra_data,omitempty"`
 }
 
-type PostPaymentRequest struct {
+type PostInvoiceRequest struct {
 	Amount uint64 `json:"amount"`
 
 	// Merchant provided ID for this payment
@@ -80,7 +80,12 @@ type PostPaymentRequest struct {
 	ExtraData string `json:"extra_data,omitempty"`
 }
 
-type PostPaymentResponse struct {
+type PostInvoiceResponse struct {
 	PaymentId string `json:"payment_id"`
 	Address   string `json:"address"`
+}
+
+type GetInvoiceCountResponse struct {
+	Count   uint64 `json:"count"`
+	Pending uint64 `json:"pending"`
 }

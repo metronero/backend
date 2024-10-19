@@ -32,5 +32,10 @@ type MerchantSettings struct {
 
 type MerchantDashboardInfo struct {
 	Stats          MerchantStats `json:"merchant_stats"`
-	RecentPayments []Payment     `json:"recent_payments"`
+	RecentPayments []Invoice     `json:"recent_payments"`
+}
+
+type GetMerchantCountResponse struct {
+	Count  uint64 `json:"count"`
+	Active uint64 `json:"active"`
 }

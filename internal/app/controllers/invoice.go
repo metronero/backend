@@ -66,7 +66,7 @@ func PostMerchantPayment(w http.ResponseWriter, r *http.Request) {
 	}
 	merchantId := token["id"].(string)
 	name := token["username"].(string)
-	var req models.PostPaymentRequest
+	var req models.PostInvoiceRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		writeError(w, apierror.ErrBadRequest, nil)
 		return
@@ -82,7 +82,7 @@ func PostMerchantPayment(w http.ResponseWriter, r *http.Request) {
 		writeError(w, apierror.ErrDatabase, err)
 		return
 	}
-	res := &models.PostPaymentResponse{PaymentId: paymentId, Address: subaddress}
+	res := &models.PostInvoiceResponse{PaymentId: paymentId, Address: subaddress}
 	json.NewEncoder(w).Encode(res)
 }
 
@@ -119,4 +119,13 @@ func PaymentPageHandler(w http.ResponseWriter, r *http.Request) {
 	p.Qr = base64.StdEncoding.EncodeToString(png)
 	p.AmountFloat = walletrpc.XMRToDecimal(p.Amount)
 	t.Execute(w, p)
+}
+
+func GetInvoiceCount(w http.ResponseWriter, r *http.Request) {
+	total, pending, err := queries.GetInvoiceCount(r.Context())
+	if err != nil {
+		writeError(w, apierror.ErrDatabase, err)
+		return
+	}
+	json.NewEncoder(w).Encode(&models.GetInvoiceCountResponse{Count: total, Pending: pending})
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"gitlab.com/moneropay/go-monero/walletrpc"
@@ -72,4 +73,59 @@ func WithdrawFunds(address string, amount uint64) error {
 		return fmt.Errorf("MoneroPay /transfer failed")
 	}
 	return nil
+}
+
+// Returns health status and version of MoneroPay
+func CheckHealth() (bool, string, error) {
+	endpoint, err := url.JoinPath(config.MoneroPay, "/health")
+	if err != nil {
+		return false, "", err
+	}
+
+	req, err := http.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return false, "", err
+	}
+	// TODO: configurable timeout
+	cl := &http.Client{Timeout: 15 * time.Second}
+	resp, err := cl.Do(req)
+	if err != nil {
+		return false, "", err
+	}
+	if resp.StatusCode != 200 {
+		return false, "", nil
+	}
+	serverHeader := resp.Header.Get("Server")
+	var version string
+	if strings.HasPrefix(serverHeader, "MoneroPay/") {
+		version = strings.TrimPrefix(serverHeader, "MoneroPay/")
+	} else {
+		return false, "", fmt.Errorf("Server header is missing or not MoneroPay")
+	}
+	return true, version, nil
+}
+
+// Returns total and unlocked wallet balance from MoneroPay
+func GetBalance() (uint64, uint64, error) {
+	endpoint, err := url.JoinPath(config.MoneroPay, "/balance")
+	if err != nil {
+		return 0, 0, err
+	}
+
+	req, err := http.NewRequest("GET", endpoint, nil)
+	if err != nil {
+		return 0, 0, err
+	}
+	// TODO: configurable timeout
+	cl := &http.Client{Timeout: 15 * time.Second}
+	resp, err := cl.Do(req)
+	if err != nil {
+		return 0, 0, err
+	}
+	if resp.StatusCode != 200 {
+		return 0, 0, nil
+	}
+	var balanceResp model.BalanceResponse
+	err = json.NewDecoder(resp.Body).Decode(&balanceResp)
+	return balanceResp.Total, balanceResp.Unlocked, nil
 }

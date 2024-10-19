@@ -82,3 +82,12 @@ func DeleteAdminMerchantById(w http.ResponseWriter, r *http.Request) {
 		writeError(w, apierror.ErrDatabase, err)
 	}
 }
+
+func GetMerchantCount(w http.ResponseWriter, r *http.Request) {
+	total, active, err := queries.GetMerchantCount(r.Context())
+	if err != nil {
+		writeError(w, apierror.ErrDatabase, err)
+		return
+	}
+	json.NewEncoder(w).Encode(&models.GetMerchantCountResponse{Count: total, Active: active})
+}
