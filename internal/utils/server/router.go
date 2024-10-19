@@ -4,8 +4,10 @@ import (
 	"gitea.com/go-chi/session"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 
 	"gitlab.com/metronero/backend/internal/app/controllers"
+	"gitlab.com/metronero/backend/internal/utils/config"
 )
 
 func registerRoutes() *chi.Mux {
@@ -18,6 +20,12 @@ func registerRoutes() *chi.Mux {
 	r.Use(middleware.Recoverer)
 	r.Use(session.Sessioner(session.Options{
 		CookieName: "MNSession",
+	}))
+
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{config.CorsOrigin},
+		AllowedMethods:   []string{"POST", "GET", "PUT", "DELETE"},
+		AllowCredentials: true,
 	}))
 
 	r.Post("/login", controllers.PostLogin)

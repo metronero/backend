@@ -21,6 +21,7 @@ var (
 	MoneroPay              string
 	TemplateDir            string
 	TemplateMaxSize        int
+	CorsOrigin             string
 	DefaultPaymentTemplate *template.Template
 )
 
@@ -36,6 +37,7 @@ func Load() {
 	var logFormat string
 	flag.StringVar(&logFormat, "log-format", "pretty", "Log format (pretty or json)")
 	flag.StringVar(&TemplateDir, "template-dir", "./data/merchant_templates", "Directory to save merchant templates.")
+	flag.StringVar(&CorsOrigin, "cors-origin", "http://*", "Allowed CORS origin")
 	flag.IntVar(&TemplateMaxSize, "template-max-size", 20, "Maximum template upload size in MiB")
 	flag.Parse()
 
