@@ -1,4 +1,4 @@
-package controllers
+package helpers
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 	"gitlab.com/metronero/backend/pkg/models"
 )
 
-func writeError(w http.ResponseWriter, apiErr *models.ApiError, err error) {
+func WriteError(w http.ResponseWriter, apiErr *models.ApiError, err error) {
 	w.WriteHeader(apiErr.Status)
 	json.NewEncoder(w).Encode(apiErr)
 	log.Error().Err(err).Int("code", apiErr.Code).Msg(apiErr.Msg)

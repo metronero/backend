@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"gitlab.com/metronero/backend/internal/app/queries"
+	"gitlab.com/metronero/backend/internal/utils/helpers"
 	"gitlab.com/metronero/backend/pkg/apierror"
 	"gitlab.com/metronero/backend/pkg/models"
 )
@@ -16,11 +17,11 @@ func PostMerchant(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "merchant_id")
 	var settings models.MerchantSettings
 	if err := json.NewDecoder(r.Body).Decode(&settings); err != nil {
-		writeError(w, apierror.ErrBadRequest, nil)
+		helpers.WriteError(w, apierror.ErrBadRequest, nil)
 		return
 	}
 	if err := queries.ConfigureMerchant(r.Context(), id, &settings); err != nil {
-		writeError(w, apierror.ErrDatabase, nil)
+		helpers.WriteError(w, apierror.ErrDatabase, nil)
 	}
 }
 
@@ -28,7 +29,7 @@ func PostMerchant(w http.ResponseWriter, r *http.Request) {
 func GetAdminMerchant(w http.ResponseWriter, r *http.Request) {
 	list, err := queries.GetMerchantList(r.Context())
 	if err != nil {
-		writeError(w, apierror.ErrDatabase, err)
+		helpers.WriteError(w, apierror.ErrDatabase, err)
 		return
 	}
 	json.NewEncoder(w).Encode(list)
@@ -39,7 +40,7 @@ func GetAdminMerchantById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "merchant_id")
 	m, err := queries.GetMerchantById(r.Context(), id)
 	if err != nil {
-		writeError(w, apierror.ErrDatabase, err)
+		helpers.WriteError(w, apierror.ErrDatabase, err)
 		return
 	}
 	json.NewEncoder(w).Encode(m)
@@ -49,11 +50,11 @@ func GetAdminMerchantById(w http.ResponseWriter, r *http.Request) {
 func PostAdminMerchantById(w http.ResponseWriter, r *http.Request) {
 	var settings models.MerchantSettings
 	if err := json.NewDecoder(r.Body).Decode(&settings); err != nil {
-		writeError(w, apierror.ErrBadRequest, nil)
+		helpers.WriteError(w, apierror.ErrBadRequest, nil)
 		return
 	}
 	if err := queries.AdminEditMerchant(r.Context(), &settings); err != nil {
-		writeError(w, apierror.ErrBadRequest, nil)
+		helpers.WriteError(w, apierror.ErrBadRequest, nil)
 	}
 }
 
@@ -61,14 +62,14 @@ func PostAdminMerchantById(w http.ResponseWriter, r *http.Request) {
 func DeleteAdminMerchantById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "merchant_id")
 	if err := queries.DeleteMerchantById(r.Context(), id); err != nil {
-		writeError(w, apierror.ErrDatabase, err)
+		helpers.WriteError(w, apierror.ErrDatabase, err)
 	}
 }
 
 func GetMerchantCount(w http.ResponseWriter, r *http.Request) {
 	total, active, err := queries.GetMerchantCount(r.Context())
 	if err != nil {
-		writeError(w, apierror.ErrDatabase, err)
+		helpers.WriteError(w, apierror.ErrDatabase, err)
 		return
 	}
 	json.NewEncoder(w).Encode(models.GetMerchantCountResponse{Count: total, Active: active})

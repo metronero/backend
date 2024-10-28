@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"gitlab.com/metronero/backend/internal/app/queries"
+	"gitlab.com/metronero/backend/internal/utils/helpers"
 	"gitlab.com/metronero/backend/pkg/apierror"
 )
 
@@ -12,7 +13,7 @@ import (
 func GetAdminWithdrawal(w http.ResponseWriter, r *http.Request) {
 	p, err := queries.GetWithdrawals(r.Context(), 0)
 	if err != nil {
-		writeError(w, apierror.ErrDatabase, err)
+		helpers.WriteError(w, apierror.ErrDatabase, err)
 		return
 	}
 	json.NewEncoder(w).Encode(p)
@@ -21,7 +22,7 @@ func GetAdminWithdrawal(w http.ResponseWriter, r *http.Request) {
 func GetAdminWithdrawalRecent(w http.ResponseWriter, r *http.Request) {
 	p, err := queries.GetWithdrawals(r.Context(), 10)
 	if err != nil {
-		writeError(w, apierror.ErrDatabase, err)
+		helpers.WriteError(w, apierror.ErrDatabase, err)
 		return
 	}
 	json.NewEncoder(w).Encode(p)

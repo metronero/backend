@@ -13,6 +13,13 @@ CREATE TABLE IF NOT EXISTS accounts (
 	last_login timestamp
 );
 
+CREATE TABLE IF NOT EXISTS api_keys (
+    key_id UUID PRIMARY KEY,
+    key_secret text NOT NULL,
+    expiry timestamp NOT NULL,
+    account_id UUID NOT NULL REFERENCES accounts ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS merchants (
 	account_id UUID PRIMARY KEY REFERENCES accounts ON DELETE CASCADE,
 	total_sales bigint NOT NULL DEFAULT 0,

@@ -11,6 +11,7 @@ import (
 	"gitlab.com/moneropay/moneropay/v2/pkg/model"
 
 	"gitlab.com/metronero/backend/internal/app/queries"
+	"gitlab.com/metronero/backend/internal/utils/helpers"
 	"gitlab.com/metronero/backend/pkg/apierror"
 )
 
@@ -18,12 +19,12 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	b, err := io.ReadAll(r.Body)
 	if err != nil {
 		// TODO: is this accurate?
-		writeError(w, apierror.ErrBadRequest, nil)
+		helpers.WriteError(w, apierror.ErrBadRequest, nil)
 		return
 	}
 	var data model.ReceiveGetResponse
 	if err := json.Unmarshal(b, &data); err != nil {
-		writeError(w, apierror.ErrBadRequest, nil)
+		helpers.WriteError(w, apierror.ErrBadRequest, nil)
 		return
 	}
 
