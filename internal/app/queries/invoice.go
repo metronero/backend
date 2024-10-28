@@ -10,8 +10,11 @@ import (
 )
 
 func GetPaymentsByAccount(ctx context.Context, id string, limit int) ([]models.Invoice, error) {
-	// Base query to get payments.
-	query := "SELECT invoice_id,merchant_name,amount,fee,order_id,status,last_update FROM payments"
+	query := `
+	SELECT p.invoice_id,a.username,p.amount,p.fee,p.order_id,p.status,p.last_update 
+	FROM payments p
+	JOIN accounts a ON p.account_id=a.account_id
+	`
 
 	// If an account ID is provided, filter by account_id.
 	if id != "" {
@@ -55,19 +58,22 @@ func GetAllPayments(ctx context.Context) ([]models.Invoice, error) {
 	return GetPaymentsByAccount(ctx, "", 0)
 }
 
-func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, name, address string,
+func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, address string,
 	req *models.PostInvoiceRequest) error {
 	return db.Exec(ctx,
-		"INSERT INTO invoices(invoice_id,amount,order_id,merchant_name,account_id,accept_url,"+
+		"INSERT INTO invoices(invoice_id,amount,order_id,account_id,accept_url,"+
 			"cancel_url,callback_url,merchant_extra,address,fee,last_update)"+
-			"VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)", paymentId, req.Amount, req.OrderId,
-		name, merchantId, req.AcceptUrl, req.CancelUrl, req.CallbackUrl, req.ExtraData, address, 0, time.Now())
+			"VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)", paymentId, req.Amount, req.OrderId,
+		merchantId, req.AcceptUrl, req.CancelUrl, req.CallbackUrl, req.ExtraData, address, 0, time.Now())
 }
 
 func GetPaymentPageInfo(ctx context.Context, id string) (*models.InvoicePageInfo, error) {
 	row, err := db.QueryRow(ctx,
-		"SELECT invoice_id,amount,order_id,merchant_name,accept_url,cancel_url,"+
-			"address,merchant_extra,account_id,status FROM payments WHERE invoice_id=$1", id)
+		`SELECT p.invoice_id,p.amount,p.order_id,a.username,p.accept_url,p.cancel_url,
+				p.address,p.merchant_extra,p.account_id,p.status 
+		 FROM payments p
+		 JOIN accounts a ON p.account_id=a.account_id
+		 WHERE p.invoice_id=$1`, id)
 	if err != nil {
 		return nil, err
 	}

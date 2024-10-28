@@ -45,7 +45,6 @@ CREATE TABLE IF NOT EXISTS payments (
 	status text NOT NULL DEFAULT 'Pending',
 	last_update timestamp NOT NULL,
 	account_id UUID REFERENCES accounts ON DELETE CASCADE,
-	merchant_name text,
 	merchant_extra text DEFAULT ''
 );
 

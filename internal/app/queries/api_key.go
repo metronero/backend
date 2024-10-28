@@ -58,7 +58,7 @@ func CheckKey(ctx context.Context, keyId, keySecret string) (bool, string, strin
 }
 
 func CreateApiKey(ctx context.Context, accountId string) (models.CreateApiKeyResponse, error) {
-	keySecret, err := auth.GenerateRandomString(12)
+	keySecret, err := auth.GenerateSecret(12)
 	if err != nil {
 		return models.CreateApiKeyResponse{}, err
 	}

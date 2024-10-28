@@ -9,9 +9,9 @@ type Merchant struct {
 }
 
 type MerchantStats struct {
-	AccountId  string `json:"merchant_id,omitempty"`
-	Balance    uint64 `json:"balance"`
-	TotalSales uint64 `json:"total_sales"`
+	TotalInvoices string `json:"total_invoices"`
+	Pending       uint64 `json:"pending"`
+	TotalSales    uint64 `json:"total_sales"`
 }
 
 type MerchantAPIKeys struct {

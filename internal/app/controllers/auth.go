@@ -38,7 +38,7 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 		helpers.WriteError(w, apierror.ErrSession, err)
 		return
 	}
-	if err := sess.Set("accountid", account.AccountId); err != nil {
+	if err := sess.Set("account_id", account.AccountId); err != nil {
 		helpers.WriteError(w, apierror.ErrSession, err)
 		return
 	}

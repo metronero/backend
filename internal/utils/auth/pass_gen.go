@@ -2,17 +2,19 @@ package auth
 
 import (
 	"crypto/rand"
-	"encoding/base64"
+	"math/big"
 )
 
-// For generating temporary user passwords. It is recommended to change
-// this password after logging in.
-func GeneratePassword() (string, error) {
-	// 10 character long password
-	b := make([]byte, 10)
-	_, err := rand.Read(b)
-	if err != nil {
-		return "", err
+const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+func GenerateSecret(length int) (string, error) {
+	result := make([]byte, length)
+	for i := range result {
+		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+		if err != nil {
+			return "", err
+		}
+		result[i] = charset[num.Int64()]
 	}
-	return base64.URLEncoding.EncodeToString(b), nil
+	return string(result), nil
 }

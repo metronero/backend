@@ -56,7 +56,7 @@ func bootstrap() {
 	}
 
 	// Create admin user and generate a password.
-	password, err := auth.GeneratePassword()
+	password, err := auth.GenerateSecret(10)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to generate password for the admin user.")
 	}

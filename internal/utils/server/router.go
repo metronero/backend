@@ -1,6 +1,7 @@
 package server
 
 import (
+	"gitea.com/go-chi/session"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -25,6 +26,10 @@ func registerRoutes() *chi.Mux {
 	}))
 
 	r.Group(func(r chi.Router) {
+		r.Use(session.Sessioner(session.Options{
+			CookieName: "MNSession",
+		}))
+
 		r.Post("/login", controllers.PostLogin)
 
 		r.Group(func(r chi.Router) {
@@ -36,8 +41,10 @@ func registerRoutes() *chi.Mux {
 				r.Group(func(r chi.Router) {
 					r.Use(middlewareMerchantArea)
 					r.Post("/", controllers.PostMerchant)
-					r.Route("/payment", func(r chi.Router) {
-						r.Get("/", controllers.GetMerchantPayment)
+					r.Get("/stats", controllers.GetMerchantStats)
+					r.Route("/invoice", func(r chi.Router) {
+						r.Get("/recent", controllers.GetMerchantInvoiceRecent)
+						r.Get("/", controllers.GetMerchantInvoice)
 						r.Post("/", controllers.PostMerchantInvoice)
 					})
 					r.Route("/template", func(r chi.Router) {

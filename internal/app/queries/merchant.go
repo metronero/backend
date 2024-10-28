@@ -59,3 +59,22 @@ func GetMerchantCount(ctx context.Context) (uint64, uint64, error) {
 	}
 	return total, active, nil
 }
+
+func GetMerchantStats(ctx context.Context) (models.MerchantStats, error) {
+	var stats models.MerchantStats
+	query := `
+		SELECT 
+			COUNT(*) AS total_invoices,
+			COUNT(CASE WHEN status = 'Pending' THEN 1 END) AS pending,
+			COALESCE(SUM(amount), 0) AS total_sales
+		FROM payments
+	`
+	row, err := db.QueryRow(ctx, query)
+	if err != nil {
+		return stats, err
+	}
+	if err := row.Scan(&stats.TotalInvoices, &stats.Pending, &stats.TotalSales); err != nil {
+		return stats, err
+	}
+	return stats, nil
+}

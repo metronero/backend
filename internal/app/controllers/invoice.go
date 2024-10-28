@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/jwtauth/v5"
 	"github.com/google/uuid"
 	qrcode "github.com/skip2/go-qrcode"
 	"gitlab.com/moneropay/go-monero/walletrpc"
@@ -43,14 +42,21 @@ func GetAdminPaymentById(w http.ResponseWriter, r *http.Request) {
 }
 
 // Get payments belonging to the logged in merchant.
-func GetMerchantPayment(w http.ResponseWriter, r *http.Request) {
-	_, token, err := jwtauth.FromContext(r.Context())
+func GetMerchantInvoice(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	id := ctx.Value("account_id").(string)
+	p, err := queries.GetPaymentsByAccount(ctx, id, 0)
 	if err != nil {
-		helpers.WriteError(w, apierror.ErrInvalidSession, err)
+		helpers.WriteError(w, apierror.ErrDatabase, err)
 		return
 	}
-	id := token["id"].(string)
-	p, err := queries.GetPaymentsByAccount(r.Context(), id, 0)
+	json.NewEncoder(w).Encode(p)
+}
+
+func GetMerchantInvoiceRecent(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	id := ctx.Value("account_id").(string)
+	p, err := queries.GetPaymentsByAccount(ctx, id, 10)
 	if err != nil {
 		helpers.WriteError(w, apierror.ErrDatabase, err)
 		return
@@ -60,13 +66,8 @@ func GetMerchantPayment(w http.ResponseWriter, r *http.Request) {
 
 // Create a new payment request.
 func PostMerchantInvoice(w http.ResponseWriter, r *http.Request) {
-	_, token, err := jwtauth.FromContext(r.Context())
-	if err != nil {
-		helpers.WriteError(w, apierror.ErrInvalidSession, err)
-		return
-	}
-	merchantId := token["id"].(string)
-	name := token["username"].(string)
+	ctx := r.Context()
+	merchantId := ctx.Value("account_id").(string)
 	var req models.PostInvoiceRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		helpers.WriteError(w, apierror.ErrBadRequest, nil)
@@ -78,7 +79,7 @@ func PostMerchantInvoice(w http.ResponseWriter, r *http.Request) {
 		helpers.WriteError(w, apierror.ErrMoneropay, nil)
 		return
 	}
-	if err := queries.CreatePaymentRequest(r.Context(), paymentId, merchantId, name,
+	if err := queries.CreatePaymentRequest(r.Context(), paymentId, merchantId,
 		subaddress, &req); err != nil {
 		helpers.WriteError(w, apierror.ErrDatabase, err)
 		return

@@ -25,6 +25,15 @@ func PostMerchant(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GetMerchantStats(w http.ResponseWriter, r *http.Request) {
+	list, err := queries.GetMerchantStats(r.Context())
+	if err != nil {
+		helpers.WriteError(w, apierror.ErrDatabase, err)
+		return
+	}
+	json.NewEncoder(w).Encode(list)
+}
+
 // Returns a list of all merchants for the administrator.
 func GetAdminMerchant(w http.ResponseWriter, r *http.Request) {
 	list, err := queries.GetMerchantList(r.Context())
