@@ -84,7 +84,7 @@ func PostMerchantInvoice(w http.ResponseWriter, r *http.Request) {
 		helpers.WriteError(w, apierror.ErrDatabase, err)
 		return
 	}
-	res := &models.PostInvoiceResponse{PaymentId: paymentId, Address: subaddress}
+	res := &models.PostInvoiceResponse{InvoiceId: paymentId, Address: subaddress}
 	json.NewEncoder(w).Encode(res)
 }
 

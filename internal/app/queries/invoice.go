@@ -11,14 +11,14 @@ import (
 
 func GetPaymentsByAccount(ctx context.Context, id string, limit int) ([]models.Invoice, error) {
 	query := `
-	SELECT p.invoice_id,a.username,p.amount,p.fee,p.order_id,p.status,p.last_update 
+	SELECT p.payment_id,a.username,p.amount,p.order_id,p.status,p.last_update 
 	FROM payments p
 	JOIN accounts a ON p.account_id=a.account_id
 	`
 
 	// If an account ID is provided, filter by account_id.
 	if id != "" {
-		query = fmt.Sprintf("%s WHERE account_id='%s'", query, id)
+		query = fmt.Sprintf("%s WHERE p.account_id='%s'", query, id)
 	}
 
 	// Order by last_update in descending order (most recent first).
@@ -42,7 +42,7 @@ func GetPaymentsByAccount(ctx context.Context, id string, limit int) ([]models.I
 	// Iterate through the result set.
 	for rows.Next() {
 		var temp models.Invoice
-		if err := rows.Scan(&temp.InvoiceId, &temp.MerchantName, &temp.Amount, &temp.Fee,
+		if err := rows.Scan(&temp.InvoiceId, &temp.MerchantName, &temp.Amount,
 			&temp.OrderId, &temp.Status, &temp.LastUpdate); err != nil {
 			return payments, err
 		}
@@ -61,7 +61,7 @@ func GetAllPayments(ctx context.Context) ([]models.Invoice, error) {
 func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, address string,
 	req *models.PostInvoiceRequest) error {
 	return db.Exec(ctx,
-		"INSERT INTO invoices(invoice_id,amount,order_id,account_id,accept_url,"+
+		"INSERT INTO payments(payment_id,amount,order_id,account_id,accept_url,"+
 			"cancel_url,callback_url,merchant_extra,address,fee,last_update)"+
 			"VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)", paymentId, req.Amount, req.OrderId,
 		merchantId, req.AcceptUrl, req.CancelUrl, req.CallbackUrl, req.ExtraData, address, 0, time.Now())
@@ -69,11 +69,11 @@ func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, address st
 
 func GetPaymentPageInfo(ctx context.Context, id string) (*models.InvoicePageInfo, error) {
 	row, err := db.QueryRow(ctx,
-		`SELECT p.invoice_id,p.amount,p.order_id,a.username,p.accept_url,p.cancel_url,
+		`SELECT p.payment_id,p.amount,p.order_id,a.username,p.accept_url,p.cancel_url,
 				p.address,p.merchant_extra,p.account_id,p.status 
 		 FROM payments p
 		 JOIN accounts a ON p.account_id=a.account_id
-		 WHERE p.invoice_id=$1`, id)
+		 WHERE p.payment_id=$1`, id)
 	if err != nil {
 		return nil, err
 	}
@@ -88,13 +88,13 @@ func GetPaymentPageInfo(ctx context.Context, id string) (*models.InvoicePageInfo
 func UpdatePayment(ctx context.Context, id, status, data string) error {
 	return db.Exec(ctx,
 		"UPDATE invoices SET status=$1,callback_data=$2,last_update=$3 "+
-			"WHERE invoice_id=$4", status, data, time.Now(), id)
+			"WHERE payment_id=$4", status, data, time.Now(), id)
 }
 
 func GetInvoiceCount(ctx context.Context) (uint64, uint64, error) {
 	var total, active uint64
 	row, err := db.QueryRow(ctx,
-		"SELECT COUNT(*),COUNT(CASE WHEN status = 'Pending' THEN 1 END) FROM payments")
+		"SELECT COUNT(*),COUNT(CASE WHEN status = 'Completed' THEN 1 END) FROM payments")
 	if err != nil {
 		return 0, 0, err
 	}

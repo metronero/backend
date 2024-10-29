@@ -6,9 +6,8 @@ type Invoice struct {
 	InvoiceId    string `json:"invoice_id"`
 	MerchantName string `json:"merchant_name"`
 	Amount       uint64 `json:"amount"`
-	Fee          uint64 `json:"fee"`
 	// Merchant provided ID for this payment
-	OrderId string `json:"order_id,omitempty"`
+	OrderId string `json:"order_id"`
 
 	// Possible statuses: pending, confirming, finished, cancelled, withdrawn
 	Status     string    `json:"status"`
@@ -38,28 +37,6 @@ type InvoicePageInfo struct {
 	ExtraData string `json:"extra_data,omitempty"`
 }
 
-// Contains all information related to a payment
-type InvoiceFull struct {
-	InvoiceId    string `json:"invoice_id"`
-	MerchantName string `json:"merchant_name"`
-	Amount       uint64 `json:"amount"`
-	Fee          uint64 `json:"fee"`
-
-	// Merchant provided ID for this payment
-	OrderId string `json:"order_id,omitempty"`
-
-	// Possible statuses: pending, confirming, finished, cancelled, withdrawn
-	Status     string    `json:"status"`
-	LastUpdate time.Time `json:"last_update"`
-
-	AcceptUrl   string `json:"accept_url,omitempty"`
-	CancelUrl   string `json:"cancel_url,omitempty"`
-	CallbackUrl string `json:"callback_url,omitempty"`
-	Address     string `json:"address"`
-	// Merchant provided extra data field
-	ExtraData string `json:"extra_data,omitempty"`
-}
-
 type PostInvoiceRequest struct {
 	Amount uint64 `json:"amount"`
 
@@ -77,7 +54,7 @@ type PostInvoiceRequest struct {
 }
 
 type PostInvoiceResponse struct {
-	PaymentId string `json:"payment_id"`
+	InvoiceId string `json:"invoice_id"`
 	Address   string `json:"address"`
 }
 

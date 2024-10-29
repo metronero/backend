@@ -4,16 +4,17 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"gitlab.com/metronero/backend/internal/app/queries"
 	"gitlab.com/metronero/backend/internal/utils/helpers"
+	"gitlab.com/metronero/backend/internal/utils/moneropay"
 	"gitlab.com/metronero/backend/pkg/apierror"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 func GetHealth(w http.ResponseWriter, r *http.Request) {
-	instance, err := queries.InstanceVersion(r.Context())
+	mpayHealth, _, err := moneropay.CheckHealth()
 	if err != nil {
-		helpers.WriteError(w, apierror.ErrDatabase, err)
+		helpers.WriteError(w, apierror.ErrMoneropay, err)
 		return
 	}
-	json.NewEncoder(w).Encode(instance)
+	json.NewEncoder(w).Encode(models.GetHealthResponse{Healthy: mpayHealth})
 }
