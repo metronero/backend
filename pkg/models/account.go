@@ -36,5 +36,6 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
-	Role string `json:"role"`
+	Role      string `json:"role"`
+	AccountId string `json:"account_id"`
 }

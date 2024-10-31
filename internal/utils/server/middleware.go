@@ -17,6 +17,7 @@ const version = "0.1.0"
 type ApiKeyData struct {
 	Accepted  bool
 	AccountId string
+	Username  string
 	Role      string
 }
 
@@ -68,7 +69,8 @@ func middlewareAuthArea(next http.Handler) http.Handler {
 		}
 		c1 := context.WithValue(r.Context(), "account_id", userIdStr)
 		c2 := context.WithValue(c1, "role", sess.Get("role").(string))
-		next.ServeHTTP(w, r.WithContext(c2))
+		c3 := context.WithValue(c2, "username", sess.Get("username").(string))
+		next.ServeHTTP(w, r.WithContext(c3))
 	})
 }
 
@@ -107,7 +109,8 @@ func ApiKeyAuth(next http.Handler) http.Handler {
 			}
 			c1 := context.WithValue(r.Context(), "account_id", data.AccountId)
 			c2 := context.WithValue(c1, "role", data.Role)
-			next.ServeHTTP(w, r.WithContext(c2))
+			c3 := context.WithValue(c2, "username", data.Username)
+			next.ServeHTTP(w, r.WithContext(c3))
 		}
 
 		keyUuid, err := base58.Decode(keyId)
@@ -116,7 +119,7 @@ func ApiKeyAuth(next http.Handler) http.Handler {
 			return
 		}
 
-		accepted, accountId, role, appErr := queries.CheckKey(ctx, string(keyUuid), keySecret)
+		accepted, accountId, role, name, appErr := queries.CheckKey(ctx, string(keyUuid), keySecret)
 		if appErr != nil {
 			helpers.WriteError(w, apierror.ErrDatabase, appErr)
 			return
@@ -125,6 +128,7 @@ func ApiKeyAuth(next http.Handler) http.Handler {
 			Accepted:  accepted,
 			AccountId: accountId,
 			Role:      role,
+			Username:  name,
 		}
 		if !accepted {
 			helpers.WriteError(w, apierror.ErrUnauthorized, nil)
@@ -132,6 +136,17 @@ func ApiKeyAuth(next http.Handler) http.Handler {
 		}
 		c1 := context.WithValue(r.Context(), "account_id", accountId)
 		c2 := context.WithValue(c1, "role", role)
-		next.ServeHTTP(w, r.WithContext(c2))
+		c3 := context.WithValue(c2, "username", name)
+		next.ServeHTTP(w, r.WithContext(c3))
+	})
+}
+
+func disableDirListing(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "" || strings.HasSuffix(r.URL.Path, "/") {
+			http.NotFound(w, r)
+			return
+		}
+		next.ServeHTTP(w, r)
 	})
 }

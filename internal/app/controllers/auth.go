@@ -46,7 +46,7 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 		helpers.WriteError(w, apierror.ErrSession, err)
 		return
 	}
-	json.NewEncoder(w).Encode(models.LoginResponse{Role: account.Role})
+	json.NewEncoder(w).Encode(models.LoginResponse{Role: account.Role, AccountId: account.AccountId})
 }
 
 // Only the instance admin can register new users

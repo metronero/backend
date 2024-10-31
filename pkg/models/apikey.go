@@ -8,6 +8,7 @@ type ApiKey struct {
 }
 
 type CreateApiKeyResponse struct {
+	KeyId  string    `json:"key_id"`
 	Key    string    `json:"key"`
 	Expiry time.Time `json:"expiry"`
 }

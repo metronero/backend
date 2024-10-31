@@ -46,7 +46,7 @@ func Load() {
 			TimeFormat: time.RFC3339})
 	}
 
-	templatePath, err := url.JoinPath(TemplateDir, "default")
+	templatePath, err := url.JoinPath(TemplateDir, "default.html")
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to load default payment template")
 	}

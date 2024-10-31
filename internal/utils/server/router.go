@@ -1,6 +1,8 @@
 package server
 
 import (
+	"net/http"
+
 	"gitea.com/go-chi/session"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -49,10 +51,11 @@ func registerRoutes() *chi.Mux {
 					})
 					r.Route("/template", func(r chi.Router) {
 						r.Get("/", controllers.GetMerchantTemplate)
+						r.Get("/default", controllers.GetDefaultTemplatePreview)
 						r.Post("/", controllers.PostMerchantTemplate)
 						r.Delete("/", controllers.DeleteMerchantTemplate)
 					})
-					r.Route("/api", func(r chi.Router) {
+					r.Route("/apikey", func(r chi.Router) {
 						r.Get("/", controllers.ListApiKey)
 						r.Post("/", controllers.CreateApiKey)
 						r.Delete("/{keyID}", controllers.RevokeApiKey)
@@ -90,6 +93,9 @@ func registerRoutes() *chi.Mux {
 
 	// For handling MoneroPay callbacks
 	r.Post("/callback/{invoice_id}", controllers.CallbackHandler)
+
+	assetServer := http.FileServer(http.Dir(config.TemplateDir))
+	r.Handle("/merchantdata/*", http.StripPrefix("/merchantdata/", disableDirListing(assetServer)))
 
 	// For handling payment page requests
 	r.Get("/p/{invoice_id}", controllers.PaymentPageHandler)

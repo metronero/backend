@@ -37,24 +37,24 @@ func GetAccountApiKeys(ctx context.Context, accountId string) ([]models.ApiKey, 
 	return keys, nil
 }
 
-func CheckKey(ctx context.Context, keyId, keySecret string) (bool, string, string, error) {
+func CheckKey(ctx context.Context, keyId, keySecret string) (bool, string, string, string, error) {
 	row, err := db.QueryRow(ctx,
-		"SELECT ak.key_secret,ak.expiry,ak.account_id,us.role FROM api_keys ak "+
+		"SELECT ak.key_secret,ak.expiry,ak.account_id,us.role,us.username FROM api_keys ak "+
 			"JOIN accounts us ON ak.account_id=us.account_id WHERE ak.key_id=$1", keyId)
 	var (
-		dbHash, accountId, role string
-		expiry                  time.Time
+		dbHash, accountId, role, username string
+		expiry                            time.Time
 	)
-	if err := row.Scan(&dbHash, &expiry, &accountId, &role); err != nil {
-		return false, "", "", err
+	if err := row.Scan(&dbHash, &expiry, &accountId, &role, &username); err != nil {
+		return false, "", "", "", err
 	}
 	if time.Now().After(expiry) {
-		return false, "", "", err
+		return false, "", "", "", err
 	}
 	if auth.HashKeySecret(keySecret) == dbHash {
-		return false, "", "", err
+		return false, "", "", "", err
 	}
-	return true, accountId, role, nil
+	return true, accountId, role, username, nil
 }
 
 func CreateApiKey(ctx context.Context, accountId string) (models.CreateApiKeyResponse, error) {
@@ -69,16 +69,16 @@ func CreateApiKey(ctx context.Context, accountId string) (models.CreateApiKeyRes
 	expiry := time.Now().AddDate(1, 0, 0)
 
 	if err := db.Exec(ctx,
-		"INSERT INTO api_keys (key_id,key_secret,expiry,account_id) VALUES ($1,$2,$3,$4,$5)",
+		"INSERT INTO api_keys (key_id,key_secret,expiry,account_id) VALUES ($1,$2,$3,$4)",
 		keyId, keySecret, expiry, accountId); err != nil {
 		return models.CreateApiKeyResponse{}, err
 	}
 	key := fmt.Sprintf("mnero_%s_%s", base58.Encode([]byte(keyId)), keySecret)
-	return models.CreateApiKeyResponse{Key: key, Expiry: expiry}, nil
+	return models.CreateApiKeyResponse{KeyId: keyId, Key: key, Expiry: expiry}, nil
 }
 
 func RevokeApiKey(ctx context.Context, keyId, accountId string) (*models.ApiError, error) {
-	if err := db.Exec(ctx, "DELETE FROM api_keys WHERE key_id=$1 AND owner_id=$2",
+	if err := db.Exec(ctx, "DELETE FROM api_keys WHERE key_id=$1 AND account_id=$2",
 		keyId, accountId); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return apierror.ErrNoId, err
