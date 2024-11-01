@@ -8,12 +8,12 @@ import (
 	"gitlab.com/metronero/backend/pkg/models"
 )
 
-func AdminEditMerchant(ctx context.Context, conf *models.MerchantSettings) error {
-	query := "UPDATE merchants SET"
+func AdminEditMerchant(ctx context.Context, conf *models.AdminMerchantSettings, accountId string) error {
+	query := "UPDATE accounts SET"
 	// TODO: support password changes here.
 	if conf.Disabled != nil {
 		query = fmt.Sprintf("%s disabled=%t", query, *conf.Disabled)
 	}
 	query += " WHERE account_id=$1"
-	return db.Exec(ctx, query, conf.AccountId)
+	return db.Exec(ctx, query, accountId)
 }

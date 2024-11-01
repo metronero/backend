@@ -22,9 +22,11 @@ type MerchantAPIKeys struct {
 }
 
 type MerchantSettings struct {
-	AccountId      string  `json:"account_id,omitempty"`
-	CommissionRate *uint64 `json:"commission_rate,omitempty"`
-	Disabled       *bool   `json:"disabled,omitempty"`
+	CompleteOn *uint64 `json:"complete_on,omitempty"`
+}
+
+type AdminMerchantSettings struct {
+	Disabled *bool `json:"disabled,omitempty"`
 }
 
 type GetMerchantCountResponse struct {

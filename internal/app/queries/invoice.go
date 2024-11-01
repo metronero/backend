@@ -60,11 +60,24 @@ func GetAllPayments(ctx context.Context) ([]models.Invoice, error) {
 
 func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, address string,
 	req *models.PostInvoiceRequest) error {
+	var (
+		confirmations uint
+		err           error
+	)
+	if req.CompleteOn == nil {
+		confirmations, err = getMerchantCompleteOn(ctx, merchantId)
+		if err != nil {
+			return err
+		}
+	} else {
+		confirmations = *req.CompleteOn
+	}
 	return db.Exec(ctx,
 		"INSERT INTO payments(payment_id,amount,order_id,account_id,accept_url,"+
-			"cancel_url,callback_url,merchant_extra,address,fee,last_update)"+
-			"VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)", paymentId, req.Amount, req.OrderId,
-		merchantId, req.AcceptUrl, req.CancelUrl, req.CallbackUrl, req.ExtraData, address, 0, time.Now())
+			"cancel_url,callback_url,merchant_extra,address,fee,last_update,complete_on)"+
+			"VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)", paymentId, req.Amount, req.OrderId,
+		merchantId, req.AcceptUrl, req.CancelUrl, req.CallbackUrl, req.ExtraData, address, 0,
+		time.Now(), confirmations)
 }
 
 func GetPaymentPageInfo(ctx context.Context, id string) (*models.InvoicePageInfo, error) {
@@ -102,4 +115,16 @@ func GetInvoiceCount(ctx context.Context) (uint64, uint64, error) {
 		return 0, 0, err
 	}
 	return total, active, nil
+}
+
+func GetInvoiceCompleteOn(ctx context.Context, id string) (uint, error) {
+	var completeOn uint
+	row, err := db.QueryRow(ctx, "SELECT complete_on FROM payments WHERE payment_id=$1", id)
+	if err != nil {
+		return 0, err
+	}
+	if err := row.Scan(&completeOn); err != nil {
+		return 0, err
+	}
+	return completeOn, err
 }

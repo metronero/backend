@@ -14,12 +14,13 @@ import (
 
 // Update merchant account settings as a merchant.
 func PostMerchant(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "merchant_id")
 	var settings models.MerchantSettings
 	if err := json.NewDecoder(r.Body).Decode(&settings); err != nil {
 		helpers.WriteError(w, apierror.ErrBadRequest, nil)
 		return
 	}
+	ctx := r.Context()
+	id := ctx.Value("account_id").(string)
 	if err := queries.ConfigureMerchant(r.Context(), id, &settings); err != nil {
 		helpers.WriteError(w, apierror.ErrDatabase, nil)
 	}
@@ -57,12 +58,13 @@ func GetAdminMerchantById(w http.ResponseWriter, r *http.Request) {
 
 // Update merchant's setting as an administrator.
 func PostAdminMerchantById(w http.ResponseWriter, r *http.Request) {
-	var settings models.MerchantSettings
+	id := chi.URLParam(r, "merchant_id")
+	var settings models.AdminMerchantSettings
 	if err := json.NewDecoder(r.Body).Decode(&settings); err != nil {
 		helpers.WriteError(w, apierror.ErrBadRequest, nil)
 		return
 	}
-	if err := queries.AdminEditMerchant(r.Context(), &settings); err != nil {
+	if err := queries.AdminEditMerchant(r.Context(), &settings, id); err != nil {
 		helpers.WriteError(w, apierror.ErrBadRequest, nil)
 	}
 }

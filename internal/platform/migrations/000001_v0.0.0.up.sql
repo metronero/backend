@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS accounts (
 	password text NOT NULL,
 	role text NOT NULL DEFAULT 'merchant',
 	creation_date timestamp NOT NULL,
-	last_login timestamp
+	last_login timestamp,
+	disabled bool DEFAULT false NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS api_keys (
@@ -23,7 +24,7 @@ CREATE TABLE IF NOT EXISTS api_keys (
 CREATE TABLE IF NOT EXISTS merchants (
 	account_id UUID PRIMARY KEY REFERENCES accounts ON DELETE CASCADE,
 	total_sales bigint NOT NULL DEFAULT 0,
-	disabled bool DEFAULT false NOT NULL
+	complete_on int NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS callback_secrets (
@@ -45,7 +46,8 @@ CREATE TABLE IF NOT EXISTS payments (
 	status text NOT NULL DEFAULT 'Pending',
 	last_update timestamp NOT NULL,
 	account_id UUID REFERENCES accounts ON DELETE CASCADE,
-	merchant_extra text DEFAULT ''
+	merchant_extra text DEFAULT '',
+	complete_on int NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS withdrawals (

@@ -51,6 +51,9 @@ type PostInvoiceRequest struct {
 
 	// Merchant provided extra data field
 	ExtraData string `json:"extra_data,omitempty"`
+
+	// Number of confirmations after a payment should be marked complete.
+	CompleteOn *uint `json:"complete_on,omitempty"`
 }
 
 type PostInvoiceResponse struct {

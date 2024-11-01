@@ -8,8 +8,19 @@ import (
 )
 
 func ConfigureMerchant(ctx context.Context, id string, conf *models.MerchantSettings) error {
-	// TODO
-	return nil
+	return db.Exec(ctx, "UPDATE merchants SET complete_on=$1 WHERE account_id=$2", conf.CompleteOn, id)
+}
+
+func getMerchantCompleteOn(ctx context.Context, id string) (uint, error) {
+	var completeOn uint
+	row, err := db.QueryRow(ctx, "SELECT complete_on FROM merchants WHERE account_id=$1", id)
+	if err != nil {
+		return 0, err
+	}
+	if err := row.Scan(&completeOn); err != nil {
+		return 0, err
+	}
+	return completeOn, nil
 }
 
 func GetMerchantList(ctx context.Context) ([]models.Merchant, error) {
