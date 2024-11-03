@@ -23,7 +23,7 @@ func GetWithdrawals(ctx context.Context, limit int) ([]models.Withdrawal, error)
 	var withdrawals []models.Withdrawal
 	for rows.Next() {
 		var temp models.Withdrawal
-		if err := rows.Scan(&temp.Id, &temp.Amount, &temp.Date); err != nil {
+		if err := rows.Scan(&temp.Id, &temp.Amount, &temp.Address, &temp.Date); err != nil {
 			return withdrawals, err
 		}
 		withdrawals = append(withdrawals, temp)
@@ -38,8 +38,8 @@ func SaveWithdrawal(ctx context.Context, w *models.Withdrawal) error {
 	}
 	defer tx.Rollback(ctx)
 	if _, err := tx.Exec(ctx,
-		"INSERT INTO withdrawals(withdrawal_id,amount,withdraw_date)"+
-			"VALUES($1,$2,$3)", w.Id, w.Amount, w.Date); err != nil {
+		"INSERT INTO withdrawals(withdrawal_id,amount,withdraw_date,address)"+
+			"VALUES($1,$2,$3,$4)", w.Id, w.Amount, w.Date, w.Address); err != nil {
 		return err
 	}
 	return tx.Commit(ctx)

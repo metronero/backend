@@ -16,6 +16,7 @@ type PostWithdrawRequest struct {
 }
 
 type PostWithdrawResponse struct {
+	Id     string `json:"withdrawal_id"`
 	TxId   string `json:"txid"`
 	Amount uint64 `json:"amount"`
 }

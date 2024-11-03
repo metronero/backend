@@ -48,7 +48,7 @@ func GetMerchantSettings(ctx context.Context, id string) (models.MerchantSetting
 func GetMerchantList(ctx context.Context) ([]models.Merchant, error) {
 	var merchants []models.Merchant
 	rows, err := db.Query(ctx,
-		"SELECT a.account_id,a.disabled,b.username from merchants a,accounts b where a.account_id=b.account_id")
+		"SELECT a.account_id,b.disabled,b.username from merchants a,accounts b where a.account_id=b.account_id")
 	if err != nil {
 		return merchants, err
 	}
@@ -83,7 +83,11 @@ func DeleteMerchantById(ctx context.Context, id string) error {
 func GetMerchantCount(ctx context.Context) (uint64, uint64, error) {
 	var total, active uint64
 	row, err := db.QueryRow(ctx,
-		"SELECT COUNT(*),COUNT(CASE WHEN disabled = false THEN 1 END) FROM merchants")
+		`SELECT 
+		COUNT(m.account_id), 
+		COUNT(CASE WHEN a.disabled = false THEN 1 END) 
+	FROM merchants m
+	JOIN accounts a ON m.account_id = a.account_id`)
 	if err != nil {
 		return 0, 0, err
 	}
