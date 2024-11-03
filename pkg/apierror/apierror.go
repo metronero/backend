@@ -20,4 +20,5 @@ var (
 	ErrNoFunds        = &models.ApiError{Code: 15, Msg: "No funds to withdraw.", Status: 500}
 	ErrPassGen        = &models.ApiError{Code: 16, Msg: "Failed to generate password.", Status: 500}
 	ErrSession        = &models.ApiError{Code: 17, Msg: "Failed to access session", Status: 500}
+	ErrFetchRate      = &models.ApiError{Code: 18, Msg: "Failed to fetch XMR rate", Status: 500}
 )

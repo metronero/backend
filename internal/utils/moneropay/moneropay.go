@@ -46,33 +46,35 @@ func CreatePayment(amount uint64, paymentId string) (string, error) {
 	return receiveResp.Address, err
 }
 
-func WithdrawFunds(address string, amount uint64) error {
+func WithdrawFunds(address string, amount uint64) (model.TransferPostResponse, error) {
 	dest := walletrpc.Destination{Amount: amount, Address: address}
 	tr := model.TransferPostRequest{Destinations: []walletrpc.Destination{dest}}
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(&tr); err != nil {
-		return err
+		return model.TransferPostResponse{}, err
 	}
 
 	endpoint, err := url.JoinPath(config.MoneroPay, "/transfer")
 	if err != nil {
-		return err
+		return model.TransferPostResponse{}, err
 	}
 	req, err := http.NewRequest("POST", endpoint, b)
 	if err != nil {
-		return err
+		return model.TransferPostResponse{}, err
 	}
 	req.Header.Set("Content-Type", "application/json")
 	// TODO: configurable timeout
 	cl := &http.Client{Timeout: 15 * time.Second}
 	resp, err := cl.Do(req)
 	if err != nil {
-		return err
+		return model.TransferPostResponse{}, err
 	}
 	if resp.StatusCode != 200 {
-		return fmt.Errorf("MoneroPay /transfer failed")
+		return model.TransferPostResponse{}, fmt.Errorf("MoneroPay /transfer failed")
 	}
-	return nil
+	var transferResp model.TransferPostResponse
+	err = json.NewDecoder(resp.Body).Decode(&transferResp)
+	return transferResp, err
 }
 
 // Returns health status and version of MoneroPay

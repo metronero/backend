@@ -22,7 +22,9 @@ type MerchantAPIKeys struct {
 }
 
 type MerchantSettings struct {
-	CompleteOn *uint64 `json:"complete_on,omitempty"`
+	CompleteOn   *uint64        `json:"complete_on,omitempty"`
+	ExpireAfter  *time.Duration `json:"expire_after,omitempty"`
+	FiatCurrency *string        `json:"fiat_currency,omitempty"`
 }
 
 type AdminMerchantSettings struct {

@@ -9,7 +9,7 @@ import (
 )
 
 func GetWithdrawals(ctx context.Context, limit int) ([]models.Withdrawal, error) {
-	query := "SELECT withdrawal_id, amount, withdraw_date FROM withdraw ORDER BY withdraw_date DESC"
+	query := "SELECT withdrawal_id,amount,address,withdraw_date FROM withdrawals ORDER BY withdraw_date DESC"
 	if limit > 0 {
 		query = fmt.Sprintf("%s LIMIT %d", query, limit)
 	}

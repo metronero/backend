@@ -6,7 +6,9 @@ import (
 
 	"gitlab.com/metronero/backend/internal/app/queries"
 	"gitlab.com/metronero/backend/internal/utils/helpers"
+	"gitlab.com/metronero/backend/internal/utils/moneropay"
 	"gitlab.com/metronero/backend/pkg/apierror"
+	"gitlab.com/metronero/backend/pkg/models"
 )
 
 // Returns a list of withdrawals.
@@ -26,4 +28,22 @@ func GetAdminWithdrawalRecent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	json.NewEncoder(w).Encode(p)
+}
+
+func PostAdminWithdraw(w http.ResponseWriter, r *http.Request) {
+	var req models.PostWithdrawRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		helpers.WriteError(w, apierror.ErrBadRequest, nil)
+		return
+	}
+	var resp models.PostWithdrawResponse
+	// TODO: support sweep_all once its added to Mpay
+	tx, err := moneropay.WithdrawFunds(req.Address, req.Amount)
+	if err != nil {
+		helpers.WriteError(w, apierror.ErrMoneropay, err)
+		return
+	}
+	resp.TxId = tx.TxHashList[0]
+	resp.Amount = tx.Amount
+	json.NewEncoder(w).Encode(resp)
 }

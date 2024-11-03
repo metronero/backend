@@ -61,29 +61,36 @@ func GetAllPayments(ctx context.Context) ([]models.Invoice, error) {
 func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, address string,
 	req *models.PostInvoiceRequest) error {
 	var (
-		confirmations uint
-		err           error
+		confirmations uint64
+		expireAfter   time.Duration
 	)
+	settings, err := GetMerchantSettings(ctx, merchantId)
+	if err != nil {
+		return err
+	}
 	if req.CompleteOn == nil {
-		confirmations, err = getMerchantCompleteOn(ctx, merchantId)
-		if err != nil {
-			return err
-		}
+		confirmations = *settings.CompleteOn
 	} else {
 		confirmations = *req.CompleteOn
 	}
+	if req.ExpireAfter == nil {
+		expireAfter = *settings.ExpireAfter
+	} else {
+		expireAfter = *req.ExpireAfter
+	}
+	now := time.Now()
 	return db.Exec(ctx,
 		"INSERT INTO payments(payment_id,amount,order_id,account_id,accept_url,"+
-			"cancel_url,callback_url,merchant_extra,address,fee,last_update,complete_on)"+
-			"VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)", paymentId, req.Amount, req.OrderId,
-		merchantId, req.AcceptUrl, req.CancelUrl, req.CallbackUrl, req.ExtraData, address, 0,
-		time.Now(), confirmations)
+			"cancel_url,callback_url,merchant_extra,address,last_update,complete_on,expires)"+
+			"VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)", paymentId, req.Amount,
+		req.OrderId, merchantId, req.AcceptUrl, req.CancelUrl, req.CallbackUrl, req.ExtraData,
+		address, now, confirmations, now.Add(expireAfter))
 }
 
 func GetPaymentPageInfo(ctx context.Context, id string) (*models.InvoicePageInfo, error) {
 	row, err := db.QueryRow(ctx,
 		`SELECT p.payment_id,p.amount,p.order_id,a.username,p.accept_url,p.cancel_url,
-				p.address,p.merchant_extra,p.account_id,p.status 
+				p.address,p.merchant_extra,p.account_id,p.status,p.expires
 		 FROM payments p
 		 JOIN accounts a ON p.account_id=a.account_id
 		 WHERE p.payment_id=$1`, id)
@@ -92,7 +99,7 @@ func GetPaymentPageInfo(ctx context.Context, id string) (*models.InvoicePageInfo
 	}
 	var p models.InvoicePageInfo
 	if err := row.Scan(&p.InvoiceId, &p.Amount, &p.OrderId, &p.MerchantName, &p.AcceptUrl,
-		&p.CancelUrl, &p.Address, &p.ExtraData, &p.TemplateId, &p.Status); err != nil {
+		&p.CancelUrl, &p.Address, &p.ExtraData, &p.TemplateId, &p.Status, &p.Expires); err != nil {
 		return nil, err
 	}
 	return &p, nil
@@ -127,4 +134,12 @@ func GetInvoiceCompleteOn(ctx context.Context, id string) (uint, error) {
 		return 0, err
 	}
 	return completeOn, err
+}
+
+func MarkInvoiceExpired(ctx context.Context, invoiceId string) error {
+	return db.Exec(ctx, "UPDATE payments SET status='Expired' WHERE payment_id=$1", invoiceId)
+}
+
+func ExpireIncompleteInvoices() error {
+	return db.Exec(context.Background(), "UPDATE payments SET status='Expired' WHERE status != 'Expired' AND status != 'Completed' AND expires < CURRENT_TIMESTAMP")
 }

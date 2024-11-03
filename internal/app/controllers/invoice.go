@@ -1,15 +1,18 @@
 package controllers
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"html/template"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 	qrcode "github.com/skip2/go-qrcode"
 	"gitlab.com/moneropay/go-monero/walletrpc"
 
@@ -91,11 +94,22 @@ func PostMerchantInvoice(w http.ResponseWriter, r *http.Request) {
 // Load merchant template, payment details and serve payment page.
 func PaymentPageHandler(w http.ResponseWriter, r *http.Request) {
 	paymentId := chi.URLParam(r, "invoice_id")
-	// Get payment details
-	p, err := queries.GetPaymentPageInfo(r.Context(), paymentId)
+	ctx := r.Context()
+	p, err := queries.GetPaymentPageInfo(ctx, paymentId)
 	if err != nil {
 		helpers.WriteError(w, apierror.ErrDatabase, err)
 		return
+	}
+
+	// When expired, purge from MoneroPay to stop receiving callbacks
+	if p.Status != "Completed" && p.Status != "Expired" && time.Now().After(p.Expires) {
+		p.Status = "Expired"
+		go func() {
+			if err := queries.MarkInvoiceExpired(context.Background(), paymentId); err != nil {
+				log.Err(err).Str("invoice_id", p.InvoiceId).Msg("Failed to mark invoice as expired")
+				return
+			}
+		}()
 	}
 
 	// Load template
