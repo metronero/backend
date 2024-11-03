@@ -40,7 +40,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "invoice_id")
 	callbackData := string(b)
 	// TODO: return the balance from this function to check if overpay occurred
-	if err := queries.UpdatePayment(context.Background(), id, status, callbackData); err != nil {
+	if err := queries.UpdatePayment(context.Background(), id, status, callbackData, data.Amount.Covered.Total); err != nil {
 		log.Error().Err(err).Msg("Failed to update payment status")
 	}
 	if data.Complete {

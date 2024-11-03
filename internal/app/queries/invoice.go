@@ -105,10 +105,10 @@ func GetPaymentPageInfo(ctx context.Context, id string) (*models.InvoicePageInfo
 	return &p, nil
 }
 
-func UpdatePayment(ctx context.Context, id, status, data string) error {
+func UpdatePayment(ctx context.Context, id, status, data string, paid uint64) error {
 	return db.Exec(ctx,
-		"UPDATE invoices SET status=$1,callback_data=$2,last_update=$3 "+
-			"WHERE payment_id=$4", status, data, time.Now(), id)
+		"UPDATE invoices SET status=$1,callback_data=$2,last_update=$3,paid=$4 "+
+			"WHERE payment_id=$5", status, data, time.Now(), paid, id)
 }
 
 func GetInvoiceCount(ctx context.Context) (uint64, uint64, error) {
