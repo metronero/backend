@@ -41,7 +41,7 @@ func GetMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Execute with dummy data
-	t.Execute(w, &models.InvoicePageInfo{
+	t.Execute(w, &models.PaymentPageInfo{
 		InvoiceId:    "0b1b6a94-9ec2-4bdf-8251-6a46aca6a332",
 		MerchantName: ctx.Value("username").(string),
 		Amount:       120000000000,
@@ -56,7 +56,7 @@ func GetMerchantTemplate(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetDefaultTemplatePreview(w http.ResponseWriter, r *http.Request) {
-	config.DefaultPaymentTemplate.Execute(w, &models.InvoicePageInfo{
+	config.DefaultPaymentTemplate.Execute(w, &models.PaymentPageInfo{
 		InvoiceId:    "0b1b6a94-9ec2-4bdf-8251-6a46aca6a332",
 		MerchantName: r.Context().Value("username").(string),
 		Amount:       120000000000,

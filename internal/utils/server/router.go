@@ -100,7 +100,8 @@ func registerRoutes() *chi.Mux {
 	r.Handle("/merchantdata/*", http.StripPrefix("/merchantdata/", disableDirListing(assetServer)))
 
 	// For handling payment page requests
-	r.Get("/p/{invoice_id}", controllers.PaymentPageHandler)
+	r.Get("/p/page/{invoice_id}", controllers.PaymentPageHandler)
+	r.Get("/p/json/{invoice_id}", controllers.PaymentPageJsonHandler)
 
 	r.Route("/merchant_api", func(r chi.Router) {
 		r.Use(middlewareAdminArea)

@@ -87,7 +87,7 @@ func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, address st
 		address, now, confirmations, now.Add(expireAfter))
 }
 
-func GetPaymentPageInfo(ctx context.Context, id string) (*models.InvoicePageInfo, error) {
+func GetPaymentPageInfo(ctx context.Context, id string) (*models.PaymentPageInfo, error) {
 	row, err := db.QueryRow(ctx,
 		`SELECT p.payment_id,p.amount,p.order_id,a.username,p.accept_url,p.cancel_url,
 				p.address,p.merchant_extra,p.account_id,p.status,p.expires
@@ -97,7 +97,7 @@ func GetPaymentPageInfo(ctx context.Context, id string) (*models.InvoicePageInfo
 	if err != nil {
 		return nil, err
 	}
-	var p models.InvoicePageInfo
+	var p models.PaymentPageInfo
 	if err := row.Scan(&p.InvoiceId, &p.Amount, &p.OrderId, &p.MerchantName, &p.AcceptUrl,
 		&p.CancelUrl, &p.Address, &p.ExtraData, &p.TemplateId, &p.Status, &p.Expires); err != nil {
 		return nil, err
