@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"gitea.com/go-chi/session"
+	"github.com/jackc/pgx/v5"
 	"gitlab.com/metronero/backend/internal/app/queries"
 	"gitlab.com/metronero/backend/internal/utils/auth"
 	"gitlab.com/metronero/backend/internal/utils/helpers"
@@ -26,7 +28,11 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	account, err := queries.UserLogin(r.Context(), creds.Username)
 	if err != nil {
-		helpers.WriteError(w, apierror.ErrDatabase, err)
+		if errors.Is(err, pgx.ErrNoRows) {
+			helpers.WriteError(w, apierror.ErrUnauthorized, err)
+		} else {
+			helpers.WriteError(w, apierror.ErrDatabase, err)
+		}
 		return
 	}
 	if err := auth.CompareHashAndPassword(account.PasswordHash, creds.Password); err != nil {

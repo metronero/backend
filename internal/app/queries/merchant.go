@@ -34,12 +34,15 @@ func ConfigureMerchant(ctx context.Context, id string, conf *models.MerchantSett
 }
 
 func GetMerchantSettings(ctx context.Context, id string) (models.MerchantSettings, error) {
-	var settings models.MerchantSettings
+	var (
+		settings    models.MerchantSettings
+		expireAfter string
+	)
 	row, err := db.QueryRow(ctx, "SELECT complete_on,expire_after,fiat_currency FROM merchants WHERE account_id=$1", id)
 	if err != nil {
 		return models.MerchantSettings{}, err
 	}
-	if err := row.Scan(&settings.CompleteOn, &settings.ExpireAfter, &settings.FiatCurrency); err != nil {
+	if err := row.Scan(&settings.CompleteOn, &expireAfter, &settings.FiatCurrency); err != nil {
 		return models.MerchantSettings{}, err
 	}
 	return settings, nil

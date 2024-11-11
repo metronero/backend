@@ -35,7 +35,7 @@ type PostInvoiceRequest struct {
 	CompleteOn *uint64 `json:"complete_on,omitempty"`
 
 	// After how long this invoice should expire if not completed
-	ExpireAfter *time.Duration `json:"expire_after,omitempty"`
+	ExpireAfter *string `json:"expire_after,omitempty"`
 }
 
 type PostInvoiceResponse struct {

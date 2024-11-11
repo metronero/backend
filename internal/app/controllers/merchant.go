@@ -22,8 +22,18 @@ func PostMerchant(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := ctx.Value("account_id").(string)
 	if err := queries.ConfigureMerchant(r.Context(), id, &settings); err != nil {
-		helpers.WriteError(w, apierror.ErrDatabase, nil)
+		helpers.WriteError(w, apierror.ErrDatabase, err)
 	}
+}
+
+func GetMerchant(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	id := ctx.Value("account_id").(string)
+	settings, err := queries.GetMerchantSettings(ctx, id)
+	if err != nil {
+		helpers.WriteError(w, apierror.ErrDatabase, err)
+	}
+	json.NewEncoder(w).Encode(settings)
 }
 
 func GetMerchantStats(w http.ResponseWriter, r *http.Request) {

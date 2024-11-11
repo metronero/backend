@@ -62,7 +62,8 @@ func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, address st
 	req *models.PostInvoiceRequest) error {
 	var (
 		confirmations uint64
-		expireAfter   time.Duration
+		expireAfter   string
+		e             time.Duration
 	)
 	settings, err := GetMerchantSettings(ctx, merchantId)
 	if err != nil {
@@ -78,13 +79,16 @@ func CreatePaymentRequest(ctx context.Context, paymentId, merchantId, address st
 	} else {
 		expireAfter = *req.ExpireAfter
 	}
+	if e, err = time.ParseDuration(expireAfter); err != nil {
+		return err
+	}
 	now := time.Now()
 	return db.Exec(ctx,
 		"INSERT INTO payments(payment_id,amount,order_id,account_id,accept_url,"+
 			"cancel_url,callback_url,merchant_extra,address,last_update,complete_on,expires)"+
 			"VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)", paymentId, req.Amount,
 		req.OrderId, merchantId, req.AcceptUrl, req.CancelUrl, req.CallbackUrl, req.ExtraData,
-		address, now, confirmations, now.Add(expireAfter))
+		address, now, confirmations, now.Add(e))
 }
 
 func GetPaymentPageInfo(ctx context.Context, id string) (*models.PaymentPageInfo, error) {
