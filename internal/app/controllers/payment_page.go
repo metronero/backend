@@ -45,7 +45,7 @@ func PaymentPageHandler(w http.ResponseWriter, r *http.Request) {
 	t, err = template.ParseFiles("./data/merchant_templates/" + p.TemplateId)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			t, err = template.ParseFiles("./data/merchant_templates/default")
+			t, err = template.ParseFiles("./data/merchant_templates/default.html")
 			if err != nil {
 				helpers.WriteError(w, apierror.ErrTemplateLoad, err)
 				return

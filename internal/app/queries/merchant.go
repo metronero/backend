@@ -45,6 +45,7 @@ func GetMerchantSettings(ctx context.Context, id string) (models.MerchantSetting
 	if err := row.Scan(&settings.CompleteOn, &expireAfter, &settings.FiatCurrency); err != nil {
 		return models.MerchantSettings{}, err
 	}
+	settings.ExpireAfter = &expireAfter
 	return settings, nil
 }
 
