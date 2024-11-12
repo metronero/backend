@@ -40,7 +40,7 @@ func PostLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	sess := session.GetSession(r)
-	if err := sess.Set("username", account.Username); err != nil {
+	if err := sess.Set("username", creds.Username); err != nil {
 		helpers.WriteError(w, apierror.ErrSession, err)
 		return
 	}

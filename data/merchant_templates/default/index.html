@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/merchantdata/default/output.css" rel="stylesheet">
+</head>
+
+<body>
+    <div id="bg"
+        class="flex h-screen justify-center items-center bg-stone-200 dark:bg-stone-800 md:px-20 md:py-0 px-10">
+        <div class="grid grid-cols-1 md:grid-cols-[auto_2fr] gap-4">
+            <div class="bg-stone-100 bg-opacity-80 dark:bg-stone-900 dark:text-white p-10 md:order-last rounded">
+                <p class="text-3xl mb-5">{{ .MerchantName }}'s Store</p>
+                <div class="mb-5">
+                    <p class="text-xl">Send <span class="font-semibold">{{ .AmountFloat }} XMR</span> to the following
+                        address:</p>
+                    <p class="text-xl"><code class="text-wrap break-all">{{ .Address }}</code>
+                </div>
+                <div class="mb-5">
+
+                    <p class="text-xl"><span class="font-semibold">Order:</span> {{ .OrderId }}</p>
+                    <p class="text-xl"><span class="font-semibold">Remarks:</span> {{ .ExtraData }}</p>
+                </div>
+                <div>
+
+                    <p class="text-xl">This page refreshes automatically. You will be redirected back to the store after
+                        paying.
+                    </p>
+                    <p class="text-xl">Powered by <a class="text-orange-500"
+                            href="https://metronero.moneropay.eu">Metronero</a>.
+                    </p>
+                </div>
+            </div>
+            <div
+                class="p-10 bg-opacity-80 bg-stone-100 dark:bg-stone-900 dark:text-white rounded flex flex-col items-center md:block text-center">
+                <p class="text-2xl font-semibold">{{ .AmountFloat }} XMR <i class="pi pi-check"></i></p>
+
+                <img class="my-3" src="data:image/png;base64, {{ .Qr }}">
+                <p class="mt-5">
+                    <span class="text-2xl font-semibold">Status: </span>
+                    {{ if eq .Status "Pending" }}
+                    <span class="rounded-full bg-blue-300 dark:bg-blue-700 py-2 px-4">Pending</span>
+                    {{ else if eq .Status "Confirming" }}
+                    <span class="rounded-full bg-purple-300 dark:bg-purple-700 py-2 px-4">Confirming</span>
+                    {{ else if eq .Status "Partial" }}
+                    <span class="rounded-full bg-yellow-300 dark:bg-yellow-700 py-2 px-4">Partial</span>
+                    {{ else if eq .Status "Expired" }}
+                    <span class="rounded-full bg-red-300 dark:bg-red-700 py-2 px-4">Expired</span>
+                    {{ else if eq .Status "Completed" }}
+                    <span class="rounded-full bg-green-300 dark:bg-green-700 py-2 px-4">Completed</span>
+                    {{ else }}
+                    <span class="rounded-full bg-gray-300 dark:bg-gray-700 py-2 px-4">Unknown Status</span>
+                    {{ end }}
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
