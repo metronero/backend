@@ -615,6 +615,15 @@ video {
   border-radius: 9999px;
 }
 
+.border {
+  border-width: 1px;
+}
+
+.border-orange-500 {
+  --tw-border-opacity: 1;
+  border-color: rgb(249 115 22 / var(--tw-border-opacity));
+}
+
 .bg-blue-300 {
   --tw-bg-opacity: 1;
   background-color: rgb(147 197 253 / var(--tw-bg-opacity));
@@ -721,17 +730,17 @@ video {
 
   font-display: swap;
 
-  src: url("/merchantdata/default/InterVariable.woff2") format("woff2");
+  src: url("./InterVariable.woff2") format("woff2");
 }
 
 @font-face {
   font-family: Inter;
 
-  src: url("/merchantdata/default/Inter-Regular.woff2") format("woff2");
+  src: url("./Inter-Regular.woff2") format("woff2");
 }
 
 #bg {
-  background-image: url("/merchantdata/default/mpay-transparent.webp");
+  background-image: url("./mpay-transparent.webp");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: right bottom;
@@ -795,6 +804,10 @@ video {
   .dark\:bg-yellow-700 {
     --tw-bg-opacity: 1;
     background-color: rgb(161 98 7 / var(--tw-bg-opacity));
+  }
+
+  .dark\:bg-opacity-80 {
+    --tw-bg-opacity: 0.8;
   }
 
   .dark\:text-white {

@@ -111,14 +111,14 @@ func GetPaymentPageInfo(ctx context.Context, id string) (*models.PaymentPageInfo
 
 func UpdatePayment(ctx context.Context, id, status, data string, paid uint64) error {
 	return db.Exec(ctx,
-		"UPDATE invoices SET status=$1,callback_data=$2,last_update=$3,paid=$4 "+
+		"UPDATE payments SET status=$1,callback_data=$2,last_update=$3,paid=$4 "+
 			"WHERE payment_id=$5", status, data, time.Now(), paid, id)
 }
 
 func GetInvoiceCount(ctx context.Context) (uint64, uint64, error) {
 	var total, active uint64
 	row, err := db.QueryRow(ctx,
-		"SELECT COUNT(*),COUNT(CASE WHEN status = 'Completed' THEN 1 END) FROM payments")
+		"SELECT COUNT(*),COUNT(CASE WHEN status = 'Pending' THEN 1 END) FROM payments")
 	if err != nil {
 		return 0, 0, err
 	}
@@ -146,4 +146,18 @@ func MarkInvoiceExpired(ctx context.Context, invoiceId string) error {
 
 func ExpireIncompleteInvoices() error {
 	return db.Exec(context.Background(), "UPDATE payments SET status='Expired' WHERE status != 'Expired' AND status != 'Completed' AND expires < CURRENT_TIMESTAMP")
+}
+
+func FindInvoiceOwnerCompleteOn(ctx context.Context, invoiceId string) (uint64, error) {
+	row, err := db.QueryRow(ctx, `SELECT m.complete_on FROM payments p
+	JOIN merchants m ON p.account_id = m.account_id
+	WHERE p.payment_id = $1`, invoiceId)
+	if err != nil {
+		return 0, err
+	}
+	var completeOn uint64
+	if err := row.Scan(&completeOn); err != nil {
+		return 0, err
+	}
+	return completeOn, nil
 }

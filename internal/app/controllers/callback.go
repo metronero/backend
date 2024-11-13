@@ -28,16 +28,50 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	id := chi.URLParam(r, "invoice_id")
+	completeOn, err := queries.FindInvoiceOwnerCompleteOn(context.Background(), id)
+
 	var status string
-	if data.Complete {
-		status = "Completed"
-	} else if data.Amount.Expected <= data.Amount.Covered.Total {
-		status = "Confirming"
-	} else if data.Amount.Expected > data.Amount.Covered.Total {
-		status = "Partial"
+	if completeOn == 10 {
+		if data.Complete {
+			status = "Completed"
+		} else if data.Amount.Expected <= data.Amount.Covered.Total {
+			status = "Confirming"
+		} else if data.Amount.Expected > data.Amount.Covered.Total {
+			status = "Partial"
+		}
+	} else {
+		if completeOn == 1 {
+			allHaveConfirmation := true
+			atLeastOne := false
+			for _, tx := range data.Transactions {
+				if tx.Confirmations >= 1 {
+					atLeastOne = true
+				} else {
+					allHaveConfirmation = false
+				}
+			}
+			if allHaveConfirmation && data.Amount.Covered.Total >= data.Amount.Expected {
+				status = "Completed"
+			} else if !allHaveConfirmation && atLeastOne {
+				if data.Amount.Covered.Total == data.Amount.Expected {
+					status = "Confirming"
+				} else if data.Amount.Covered.Total < data.Amount.Expected {
+					status = "Partial"
+				}
+			}
+		} else {
+			// 0-conf
+			if data.Amount.Covered.Total >= data.Amount.Expected {
+				status = "Completed"
+			} else if data.Amount.Covered.Total < data.Amount.Expected && data.Amount.Covered.Total > 0 {
+				status = "Partial"
+			} else {
+				status = "Pending"
+			}
+		}
 	}
 
-	id := chi.URLParam(r, "invoice_id")
 	callbackData := string(b)
 	// TODO: return the balance from this function to check if overpay occurred
 	if err := queries.UpdatePayment(context.Background(), id, status, callbackData, data.Amount.Covered.Total); err != nil {

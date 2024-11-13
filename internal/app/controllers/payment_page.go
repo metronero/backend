@@ -62,6 +62,7 @@ func PaymentPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	p.Qr = base64.StdEncoding.EncodeToString(png)
 	p.AmountFloat = walletrpc.XMRToDecimal(p.Amount)
+	w.Header().Set("Refresh", "10") // TODO: Make this customiozable or turnable off, so people can handle this via meta tag or JS instead.
 	t.Execute(w, p)
 }
 

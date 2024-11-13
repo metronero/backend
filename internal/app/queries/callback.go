@@ -10,7 +10,7 @@ import (
 
 func UpdateBalances(ctx context.Context, paymentId string, amount uint64) {
 	row, err := db.QueryRow(ctx,
-		"SELECT account_id FROM invoices WHERE invoice_id=$1", paymentId)
+		"SELECT account_id FROM payments WHERE payment_id=$1", paymentId)
 	if err != nil {
 		log.Error().Err(err).Str("invoice_id", paymentId).Msg("Failed to get account ID from payment")
 		return
