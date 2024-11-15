@@ -101,16 +101,16 @@ func GetMerchantCount(ctx context.Context) (uint64, uint64, error) {
 	return total, active, nil
 }
 
-func GetMerchantStats(ctx context.Context) (models.MerchantStats, error) {
+func GetMerchantStats(ctx context.Context, accountId string) (models.MerchantStats, error) {
 	var stats models.MerchantStats
 	query := `
 		SELECT 
 			COUNT(*) AS total_invoices,
 			COUNT(CASE WHEN status = 'Pending' THEN 1 END) AS pending,
 			COALESCE(SUM(amount), 0) AS total_sales
-		FROM payments
+		FROM payments where account_id = $1
 	`
-	row, err := db.QueryRow(ctx, query)
+	row, err := db.QueryRow(ctx, query, accountId)
 	if err != nil {
 		return stats, err
 	}

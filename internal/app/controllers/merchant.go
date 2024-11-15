@@ -37,7 +37,9 @@ func GetMerchant(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetMerchantStats(w http.ResponseWriter, r *http.Request) {
-	list, err := queries.GetMerchantStats(r.Context())
+	ctx := r.Context()
+	id := ctx.Value("account_id").(string)
+	list, err := queries.GetMerchantStats(r.Context(), id)
 	if err != nil {
 		helpers.WriteError(w, apierror.ErrDatabase, err)
 		return
